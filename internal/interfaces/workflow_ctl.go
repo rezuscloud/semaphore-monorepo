@@ -4,9 +4,9 @@ import (
 	"net/http"
 )
 
-// WorkflowController serves the workflow HTTP API. The open-source build wires a
-// no-op stub (see pro/api/projects); the licensed build provides the real
-// implementation (see pro_impl/api/projects). The handlers delegate workflow
+// WorkflowController serves the workflow HTTP API. The current handlers are a
+// no-op placeholder (see internal/api/projects) until the Workflows feature
+// milestone lands the real implementation. The handlers delegate workflow
 // orchestration to a WorkflowService.
 type WorkflowController interface {
 	GetWorkflows(w http.ResponseWriter, r *http.Request)

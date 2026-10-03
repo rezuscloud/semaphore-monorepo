@@ -74,7 +74,7 @@ type TaskPool struct {
 	// state provides pluggable storage for Queue, active projects, running tasks and aliases
 	state TaskStateStore
 
-	// workflowService orchestrates workflow runs (a Pro feature). It is injected
+	// workflowService orchestrates workflow runs (feature milestone pending). It is injected
 	// after construction via SetWorkflowService; the pool only calls back into it
 	// when a workflow task finishes. nil in tests / before wiring.
 	workflowService interfaces.WorkflowService
@@ -139,7 +139,7 @@ func (p *TaskPool) SetWorkflowService(svc interfaces.WorkflowService) {
 // HandleWorkflowTaskCompletion notifies the workflow service that a task that
 // belongs to a workflow run has finished, so it can progress the run. It is a
 // thin delegator so the open task lifecycle (TaskRunner) need not know about the
-// Pro workflow service; a no-op when no service is wired.
+// workflow service; a no-op when no service is wired.
 func (p *TaskPool) HandleWorkflowTaskCompletion(task db.Task) error {
 	if p.workflowService == nil {
 		return nil

@@ -189,24 +189,6 @@
 
         <v-divider />
 
-        <v-alert
-          type="info"
-          text
-          color="hsl(348deg, 86%, 61%)"
-          style="border-radius: 0;"
-          v-if="!features.terraform_backend"
-        >
-            <span class="mr-2">
-              Terraform/OpenTofu HTTP backend available only in <b>PRO</b> version.
-            </span>
-          <v-btn
-            color="hsl(348deg, 86%, 61%)"
-            href="https://semaphoreui.com/pro#runners"
-          >
-            Learn more
-            <v-icon>mdi-chevron-right</v-icon>
-          </v-btn>
-        </v-alert>
         <v-card-text>
 
           <h3>Aliases</h3>

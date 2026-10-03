@@ -174,7 +174,7 @@ type RunnerConfig struct {
 
 // RunnerK8sConfig holds runner-side configuration for the Kubernetes executor. Field
 // shape mirrors the GitLab runner Kubernetes executor for familiarity. Empty values
-// fall back to the documented defaults at consumption time (see pro/services/tasks/k8s).
+// fall back to the documented defaults at consumption time (see internal/services/tasks/k8s).
 type RunnerK8sConfig struct {
 	// KubeconfigPath is the path to a kubeconfig file. When empty, in-cluster
 	// configuration is used (ServiceAccount token + CA cert mounted by Kubernetes).
@@ -207,7 +207,7 @@ type RunnerK8sConfig struct {
 // RunnerDockerConfig holds runner-side configuration for the Docker executor. Each task
 // runs in an ephemeral container created against a local or remote Docker daemon,
 // GitLab-Docker-executor-style. Empty values fall back to the documented defaults at
-// consumption time (see pro/services/tasks/docker).
+// consumption time (see internal/services/tasks/docker).
 type RunnerDockerConfig struct {
 	// Host is the Docker daemon URL. Supports unix://, tcp:// and npipe:// schemes.
 	// When empty the standard environment (DOCKER_HOST) and the platform default

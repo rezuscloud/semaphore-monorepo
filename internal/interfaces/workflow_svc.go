@@ -3,10 +3,9 @@ package interfaces
 import "github.com/semaphoreui/semaphore/db"
 
 // WorkflowService orchestrates workflow runs: starting a run, progressing it as
-// upstream tasks finish, resolving approvals and merging run artifacts. It is a
-// Pro feature — the open-source build wires a no-op stub
-// (pro/services/server/workflow_svc.go); the licensed build provides the real
-// implementation (pro_impl/services/server/workflow_svc.go).
+// upstream tasks finish, resolving approvals and merging run artifacts. The
+// implementation lands with the Workflows feature milestone; until then a
+// no-op stub (internal/services/server/workflow_svc.go) is wired.
 type WorkflowService interface {
 	StartWorkflow(workflow db.WorkflowTemplate, user *db.User) (db.WorkflowRun, error)
 	ProgressWorkflowRun(projectID int, runID int, user *db.User) error
@@ -20,7 +19,7 @@ type WorkflowService interface {
 
 // WorkflowTaskEnqueuer is the slice of the task pool the workflow service needs
 // to launch a node's task. It is implemented by *services/tasks.TaskPool.
-// Declaring it here keeps the pro modules dependent only on pro_interfaces + db,
+// Declaring it here keeps the consumer packages dependent only on interfaces + db,
 // avoiding an import of (and a cycle with) the services/tasks package.
 type WorkflowTaskEnqueuer interface {
 	AddTask(task db.Task, userID *int, username string, projectID int, needAlias bool) (db.Task, error)

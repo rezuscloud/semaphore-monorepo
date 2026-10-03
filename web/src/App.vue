@@ -371,8 +371,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-list-item key="project" v-bind="attrs" v-on="on">
                 <v-list-item-icon>
-                  <v-icon color="#f14668" v-if="user.pro"> mdi-professional-hexagon</v-icon>
-                  <v-icon v-else>mdi-account</v-icon>
+                  <v-icon>mdi-account</v-icon>
                 </v-list-item-icon>
 
                 <v-list-item-content>
@@ -1111,7 +1110,7 @@ export default {
         });
       }
 
-      // Workflows is a Pro feature; hide the nav item unless it is licensed.
+      // Workflows land with their feature milestone; hide the nav item until then.
       const features = (this.systemInfo || {}).features || {};
       return items.filter((it) => it.key !== 'workflows' || features.workflows);
     },

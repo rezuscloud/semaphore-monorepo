@@ -34,12 +34,12 @@ EOF
   fi
 
   # Disable workspace mode so go-licenses only sees the root module's
-  # dependency graph, not sibling workspace modules (e.g. pro_impl).
+  # dependency graph.
   export GOWORK=off
 
   # Discover the root module path so we can filter out first-party packages
   # (the root module itself plus any local `replace` targets that resolve to
-  # paths inside this repo, like `pro/`).
+  # paths inside this repo).
   ROOT_MODULE="$(awk '/^module / { print $2; exit }' go.mod)"
 
   # Output format: <module>\t<url>\t<license>

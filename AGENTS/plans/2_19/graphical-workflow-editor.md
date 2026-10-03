@@ -99,33 +99,33 @@ Status: implemented (initial cut). Built with Drawflow (decision D4).
   templates carry `last_task`. `Workflows.vue` routes to the editor (dialog path
   removed); `WorkflowForm.vue` retired.
 
-## Pro feature gating
+## Feature gating
 
-Workflows are a Pro feature, gated with the same mechanism as
+Workflows land with their feature milestone, gated with the same mechanism as
 `terraform_backend` / `project_runners`: a controller interface in
-`pro_interfaces`, a real implementation in `pro_impl`, a no-op stub in `pro`
-(swapped at build time via `replace github.com/semaphoreui/semaphore/pro =>
-./pro` vs `./pro_impl`), plus a feature flag.
+the interfaces package (`internal/interfaces`) and a no-op stub in
+`internal/` until the milestone lands the real implementation, plus a
+feature flag.
 
-- **`pro_interfaces`** — `WorkflowController` (the 12 HTTP handlers, including
+- **`internal/interfaces`** — `WorkflowController` (the 12 HTTP handlers, including
   `StopWorkflowRun`) and `WorkflowTaskEnqueuer` (the narrow subset of
   `*services/tasks.TaskPool` the service needs — `AddTask` to launch a node's
   task and `StopTasksByWorkflowRun` to stop a run's tasks — declared here so the
-  pro modules
-  depend only on `pro_interfaces` + `db`, avoiding a `services/tasks` import /
+  the interfaces package
+  depend only on `internal/interfaces` + `db`, avoiding a `services/tasks` import /
   cycle). Added `Workflows bool` to `Features`.
-- **`pro_impl/api/projects/workflows.go`** — the real controller (the request
+- **the milestone implementation** — the real controller (the request
   logic moved out of `api/projects/workflows.go`); it delegates orchestration to
-  the `WorkflowService`. `pro_impl/pkg/features` sets `Workflows:
-  planDetails.IsPro()`.
-- **`pro_impl/services/server/workflow_svc.go`** — the real `WorkflowService`:
+  the `WorkflowService`. The feature flag `Workflows` is enabled when the
+  milestone lands.
+- **the milestone implementation** of `WorkflowService`:
   the orchestration engine extracted from `TaskPool` (start/progress runs,
   approvals, artifact merge). It depends only on `db.Store` and a
   `WorkflowTaskEnqueuer` (the pool's `AddTask`), holds its own mutex, and is a
   self-contained entity rather than methods on the open task pool.
-- **`pro/api/projects/workflows.go`** and **`pro/services/server/workflow_svc.go`**
+- **`internal/api/projects/workflows.go`** and **`internal/services/server/workflow_svc.go`**
   — the open-source stubs: list endpoints return `[]`, the rest `404`; the
-  service methods are safe no-ops. `pro/pkg/features` already returns an empty
+  service methods are safe no-ops. `internal/pkg/features` already returns an empty
   `Features{}` (so `Workflows` is `false` in open builds).
 - **`api/router.go`** constructs `workflowController :=
   proProjects.NewWorkflowController(workflowService)` and registers its methods.
@@ -146,8 +146,8 @@ task-execution lifecycle (`TaskRunner`) calls them on every finished task. They
 are safe no-ops when the stub service is wired (open builds). The workflow
 `db.Store` methods (`WorkflowManager`) also stay open — they are plain CRUD over
 the open schema, consumed by both the service and the context-loader middlewares.
-The orchestration engine itself now lives entirely in `pro_impl`
-(`workflow_runner.go` was removed from `services/tasks`).
+The orchestration engine lives with the workflow service implementation
+(it was extracted from `services/tasks`).
 
 **Migration note (fixed in passing).** The `position_x`/`position_y` columns had
 been folded into the unreleased `v2.18.15.sql`, but `position_y` was written with

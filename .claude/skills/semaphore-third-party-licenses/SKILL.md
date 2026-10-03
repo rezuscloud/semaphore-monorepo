@@ -55,10 +55,9 @@ need attribution). Override only if the user explicitly asks for dev deps too.
 Run `scripts/collect_licenses.sh` from the repo root. It does the following:
 
 - Sets `GOWORK=off` and runs `go-licenses report ./... --template scripts/go_template.tpl` for the Go backend, so
-  workspace siblings (e.g. `pro_impl`) are not pulled in.
+  (the repository is a single Go module; `GOWORK=off` is belt-and-braces).
 - Rolls sub-package rows up to their parent module (uses `go list -m all` for the module → version map) and drops
-  any module path that belongs to the root module's namespace (first-party packages, including `replace … => ./pro`
-  targets).
+  any module path that belongs to the root module's namespace (first-party packages).
 - Applies a small `OVERRIDES` table in the script for modules where `go-licenses` can't auto-detect a license
   (e.g. `modernc.org/mathutil` → BSD-3-Clause). Extend the table when new "Unknown" entries appear.
 - Runs `license-checker --production --json --excludePrivatePackages` in the frontend directory and strips the
@@ -124,8 +123,8 @@ on the host, not Semaphore UI's distribution. Listing them would imply otherwise
 reviewing customer's legal team. The "Subprocess exception" section in `references/license_policy.md` explains the
 reasoning if a reviewer asks.
 
-**First-party packages with no LICENSE.** The root module and any `replace … => ./<dir>` target (e.g. `./pro`) live
-inside this repo and don't need to be self-attributed. The collection script filters them out by the root module
+**First-party packages with no LICENSE.** The root module (the only module in this
+repository) doesn't need to be self-attributed. The collection script filters them out by the root module
 prefix from `go.mod`. If you see "Unknown license" rows for `github.com/<this-org>/<this-repo>/…`, the filter is
 working correctly — those rows shouldn't appear in the final cache.
 

@@ -4,10 +4,9 @@ import (
 	"github.com/semaphoreui/semaphore/db"
 )
 
-// WorkflowStoreImpl is the open-source no-op stub for the Pro workflow store.
-// Workflows are a Pro feature; the real implementation lives in
-// pro_impl/db/sql/workflow.go. The stub keeps the open build compiling while
-// the feature is disabled via the Workflows feature flag.
+// WorkflowStoreImpl is a no-op placeholder for the workflow store.
+// Workflows are not implemented yet and land with their feature milestone;
+// the stub keeps the build compiling until then.
 type WorkflowStoreImpl struct {
 }
 

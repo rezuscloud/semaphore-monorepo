@@ -81,20 +81,7 @@
             <v-list-item-title>OpenBao</v-list-item-title>
           </v-list-item>
 
-          <div
-            :class="{
-              SecretStoragesEnterpriseMenu:
-                features.secret_storage_management && !features.secret_storage_management_ex,
-            }"
-            :style="{
-              backgroundColor:
-                features.secret_storage_management && !features.secret_storage_management_ex
-                  ? $vuetify.theme.dark
-                    ? '#3f3f3f'
-                    : '#f0f0f0'
-                  : '',
-            }"
-          >
+          <div>
             <v-list-item
               link
               @click="
@@ -137,17 +124,6 @@
               <v-list-item-title>Devolutions Server</v-list-item-title>
             </v-list-item>
 
-            <a
-              v-if="features.secret_storage_management && !features.secret_storage_management_ex"
-              class="SecretStoragesEnterpriseMenu__overlay"
-              href="https://semaphoreui.com/enterprise"
-              target="_blank"
-            >
-              <div class="SecretStoragesEnterpriseMenu__button">
-                Enterprise
-                <v-icon color="white" small class="ml-1">mdi-arrow-right</v-icon>
-              </div>
-            </a>
           </div>
         </v-list>
       </v-menu>
@@ -215,39 +191,6 @@
 </template>
 
 <style scoped lang="scss">
-.SecretStoragesEnterpriseMenu {
-  position: relative;
-  cursor: not-allowed;
-}
-
-.SecretStoragesEnterpriseMenu__overlay {
-  text-decoration: none !important;
-  transition: 0.3s;
-  z-index: 1;
-  backdrop-filter: blur(5px);
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-wrap: wrap;
-  opacity: 0;
-  &:hover {
-    opacity: 1;
-  }
-}
-
-.SecretStoragesEnterpriseMenu__button {
-  background: orange;
-  color: white;
-  font-weight: bold;
-  border-radius: 100px;
-  padding: 6px 16px;
-}
 </style>
 
 <script>

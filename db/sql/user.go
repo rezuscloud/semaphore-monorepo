@@ -89,24 +89,22 @@ func (d *SqlDb) UpdateUser(user db.UserWithPwd) error {
 			return err
 		}
 		_, err = d.exec(
-			"update `user` set name=?, username=?, email=?, alert=?, admin=?, pro=?, password=? where id=?",
+			"update `user` set name=?, username=?, email=?, alert=?, admin=?, password=? where id=?",
 			user.Name,
 			user.Username,
 			user.Email,
 			user.Alert,
 			user.Admin,
-			user.Pro,
 			string(pwdHash),
 			user.ID)
 	} else {
 		_, err = d.exec(
-			"update `user` set name=?, username=?, email=?, alert=?, admin=?, pro=? where id=?",
+			"update `user` set name=?, username=?, email=?, alert=?, admin=? where id=?",
 			user.Name,
 			user.Username,
 			user.Email,
 			user.Alert,
 			user.Admin,
-			user.Pro,
 			user.ID)
 	}
 
@@ -233,15 +231,6 @@ func (d *SqlDb) GetUser(userID int) (user db.User, err error) {
 	if errors.Is(err, db.ErrNotFound) {
 		err = nil
 	}
-
-	return
-}
-
-func (d *SqlDb) GetProUserCount() (count int, err error) {
-
-	cnt, err := d.Sql().SelectInt(d.PrepareQuery("select count(*) from `user` where pro"))
-
-	count = int(cnt)
 
 	return
 }

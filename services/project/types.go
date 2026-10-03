@@ -30,8 +30,8 @@ type BackupDB struct {
 	// store is the main store every entity restores into. Held here so Restore
 	// implementations read it from BackupDB instead of taking it as a parameter.
 	store db.Store
-	// workflowStore persists workflow templates. Workflows are a Pro feature
-	// living outside db.Store (see db.WorkflowManager), so it is injected
+	// workflowStore persists workflow templates. Workflows live outside
+	// db.Store (see db.WorkflowManager), so it is injected
 	// separately rather than reached through store.
 	workflowStore db.WorkflowManager
 }

@@ -342,7 +342,7 @@ Expected: PASS (`Connect()` executes `PRAGMA foreign_keys = ON` for sqlite — d
 - [ ] **Step 7: Build everything (Store interface satisfied)**
 
 Run: `go build ./...`
-Expected: OK (any other `db.Store` implementers, e.g. in `pro_impl/`, must compile; if a pro wrapper embeds `db.Store` it inherits the methods automatically — verify).
+Expected: OK (any other `db.Store` implementers must compile; if a wrapper embeds `db.Store` it inherits the methods automatically — verify).
 
 - [ ] **Step 8: Commit**
 
@@ -1062,7 +1062,7 @@ git commit -m "feat(auth): admin API to list and unlink external identities"
 
 ## Verification checklist (after all tasks)
 
-- [ ] `go build ./...` and `go test ./... -count=1` green (including `pro_impl` if checked out).
+- [ ] `go build ./...` and `go test ./... -count=1` green.
 - [ ] Fresh install: LDAP + OIDC login create identity rows; second login reuses them.
 - [ ] Upgrade simulation: create user with `External=true` and no identity rows, log in via LDAP with matching email → adopted, identity created; repeat with `external_auth_email_matching: never` → login fails (no silent merge).
 - [ ] Email change at IdP: same account, updated email.

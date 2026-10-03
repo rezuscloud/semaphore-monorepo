@@ -159,15 +159,6 @@ func (c *UsersController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !editor.Admin && (user.Pro && !targetUser.Pro) {
-		c.log.WithFields(log.Fields{
-			"editor":  editor.Username,
-			"user_id": targetUser.ID,
-		}).Debug("Not permitted to mark users as Pro")
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
 	if !editor.Admin && editor.ID != targetUser.ID {
 		c.log.WithFields(log.Fields{
 			"editor":  editor.Username,

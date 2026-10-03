@@ -320,9 +320,8 @@ func TestBackup_RestoreScheduleWithoutTaskParams(t *testing.T) {
 	assert.True(t, found, "restored schedule should be persisted")
 }
 
-// TestBackup_Workflow moved to pro_impl/db/sql/backup_workflow_test.go because
-// workflow persistence is a Pro feature requiring the real workflow store
-// (the open-source build only has the no-op stub).
+// TestBackup_Workflow is not defined here because workflow persistence is not
+// implemented yet (it lands with the Workflows feature milestone).
 
 func isUnique(items []testItem) bool {
 	for i, item := range items {

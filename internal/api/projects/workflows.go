@@ -8,11 +8,10 @@ import (
 	"github.com/semaphoreui/semaphore/internal/interfaces"
 )
 
-// workflowController is the open-source stub. Workflows are a Pro feature; the
-// real implementation lives in pro_impl/api/projects/workflows.go. The stub
-// keeps the open build compiling and the API surface present (returning empty
-// collections / 404) while the feature is disabled via the Workflows feature
-// flag (see pro/pkg/features).
+// workflowController is a placeholder: workflows are not implemented yet and
+// land with their feature milestone. The stub keeps the build compiling and
+// the API surface present (returning empty collections / 404) until then.
+// Feature availability is decided by internal/pkg/features.
 type workflowController struct{}
 
 func NewWorkflowController(svc interfaces.WorkflowService, workflowRepo db.WorkflowManager) interfaces.WorkflowController {
