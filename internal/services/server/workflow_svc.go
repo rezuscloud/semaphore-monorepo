@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 )
 
 // workflowService is the open-source no-op stub for the Pro workflow
@@ -12,13 +12,13 @@ import (
 // Workflows feature flag.
 type workflowService struct{}
 
-func NewWorkflowService(workflowRepo db.WorkflowManager, templateReceiver db.WorkflowTemplateValidationStore, enqueuer pro_interfaces.WorkflowTaskEnqueuer, locker pro_interfaces.WorkflowRunLocker) pro_interfaces.WorkflowService {
+func NewWorkflowService(workflowRepo db.WorkflowManager, templateReceiver db.WorkflowTemplateValidationStore, enqueuer interfaces.WorkflowTaskEnqueuer, locker interfaces.WorkflowRunLocker) interfaces.WorkflowService {
 	return &workflowService{}
 }
 
 // NewWorkflowReconciler is the open-source no-op stub: workflows are a Pro
 // feature, so there is nothing to reconcile. Callers must nil-check.
-func NewWorkflowReconciler(_ db.WorkflowManager, _ pro_interfaces.WorkflowService) pro_interfaces.WorkflowReconciler {
+func NewWorkflowReconciler(_ db.WorkflowManager, _ interfaces.WorkflowService) interfaces.WorkflowReconciler {
 	return nil
 }
 

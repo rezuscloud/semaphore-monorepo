@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	proFactory "github.com/semaphoreui/semaphore/pro/db/factory"
+	featFactory "github.com/semaphoreui/semaphore/internal/db/factory"
 	projectService "github.com/semaphoreui/semaphore/services/project"
 	"github.com/spf13/cobra"
 )
@@ -74,7 +74,7 @@ var projectExportCmd = &cobra.Command{
 			}
 		}
 
-		workflowStore := proFactory.NewWorkflowStore(store)
+		workflowStore := featFactory.NewWorkflowStore(store)
 		backup, err := projectService.GetBackup(projectID, store, workflowStore)
 		if err != nil {
 			fmt.Printf("Failed to create backup: %v\n", err)

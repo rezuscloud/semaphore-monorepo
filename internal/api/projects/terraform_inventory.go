@@ -5,12 +5,12 @@ import (
 
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 )
 
 type terraformInventoryController struct{}
 
-func NewTerraformInventoryController(terraformRepo db.TerraformStore) pro_interfaces.TerraformInventoryController {
+func NewTerraformInventoryController(terraformRepo db.TerraformStore) interfaces.TerraformInventoryController {
 	return &terraformInventoryController{}
 }
 

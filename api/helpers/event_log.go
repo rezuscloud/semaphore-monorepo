@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -52,9 +52,9 @@ func EventLog(r *http.Request, action EventLogType, item EventLogItem) {
 		log.WithFields(logFields).Error("Failed to store event")
 	}
 
-	logWriter := GetFromContext(r, "log_writer").(pro_interfaces.LogWriteService)
+	logWriter := GetFromContext(r, "log_writer").(interfaces.LogWriteService)
 
-	if err := logWriter.WriteEventLog(pro_interfaces.EventLogRecord{
+	if err := logWriter.WriteEventLog(interfaces.EventLogRecord{
 		Action:        string(action),
 		ProjectID:     event.ProjectID,
 		UserID:        event.UserID,

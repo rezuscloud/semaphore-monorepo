@@ -1,4 +1,4 @@
-package pro_interfaces
+package interfaces
 
 type Features struct {
 	ProjectRunners            bool `json:"project_runners"`

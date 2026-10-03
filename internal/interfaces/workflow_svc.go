@@ -1,4 +1,4 @@
-package pro_interfaces
+package interfaces
 
 import "github.com/semaphoreui/semaphore/db"
 

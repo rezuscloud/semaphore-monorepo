@@ -11,7 +11,7 @@ import (
 	"github.com/semaphoreui/semaphore/pkg/ssh"
 
 	"github.com/semaphoreui/semaphore/pkg/task_logger"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/semaphoreui/semaphore/db_lib"
@@ -60,11 +60,11 @@ func (s *EncryptionServiceMock) FillEnvironmentSecrets(env *db.Environment, dese
 type mockLogWriteService struct {
 }
 
-func (l *mockLogWriteService) WriteEventLog(event pro_interfaces.EventLogRecord) error {
+func (l *mockLogWriteService) WriteEventLog(event interfaces.EventLogRecord) error {
 	return nil
 }
 
-func (l *mockLogWriteService) WriteTaskLog(task pro_interfaces.TaskLogRecord) error {
+func (l *mockLogWriteService) WriteTaskLog(task interfaces.TaskLogRecord) error {
 	return nil
 }
 func (l *mockLogWriteService) WriteResult(task any) error {

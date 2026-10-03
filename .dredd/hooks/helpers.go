@@ -12,7 +12,7 @@ import (
 	"github.com/semaphoreui/semaphore/db/factory"
 	"github.com/semaphoreui/semaphore/db/sql"
 	"github.com/semaphoreui/semaphore/pkg/random"
-	proFactory "github.com/semaphoreui/semaphore/pro/db/factory"
+	featFactory "github.com/semaphoreui/semaphore/internal/db/factory"
 	"github.com/semaphoreui/semaphore/util"
 	"github.com/snikch/goodman/transaction"
 )
@@ -465,7 +465,7 @@ func dbConnect() {
 
 	store.Connect()
 
-	workflowStore = proFactory.NewWorkflowStore(store)
+	workflowStore = featFactory.NewWorkflowStore(store)
 }
 
 func stringInSlice(a string, list []string) (int, bool) {

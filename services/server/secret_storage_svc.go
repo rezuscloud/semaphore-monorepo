@@ -6,7 +6,7 @@ import (
 	"github.com/semaphoreui/semaphore/db"
 	"github.com/semaphoreui/semaphore/pkg/common_errors"
 	"github.com/semaphoreui/semaphore/pkg/random"
-	pro "github.com/semaphoreui/semaphore/pro/services/server"
+	"github.com/semaphoreui/semaphore/internal/services/server"
 )
 
 type SecretStorageService interface {
@@ -40,7 +40,7 @@ type SecretStorageServiceImpl struct {
 }
 
 func (s *SecretStorageServiceImpl) SyncSecrets(sync db.SecretSync) error {
-	return pro.SyncSecrets(sync, s.secretStorageRepo, s.accessKeyRepo, s.encryptionService)
+	return server.SyncSecrets(sync, s.secretStorageRepo, s.accessKeyRepo, s.encryptionService)
 }
 
 func (s *SecretStorageServiceImpl) Delete(projectID int, storageID int) (err error) {
@@ -95,7 +95,7 @@ func (s *SecretStorageServiceImpl) Create(storage db.SecretStorage) (res db.Secr
 	sourceStorageType := storage.SourceStorageType
 	sourceStorageKey := ""
 
-	if !pro.StorageRequiresSecret(storage) {
+	if !server.StorageRequiresSecret(storage) {
 		// The storage authenticates without credentials stored in Semaphore
 		// (for example an AWS IAM role), so no access key is created.
 		return s.secretStorageRepo.CreateSecretStorage(storage)
@@ -159,7 +159,7 @@ func (s *SecretStorageServiceImpl) Update(storage db.SecretStorage) (err error) 
 		return
 	}
 
-	if !pro.StorageRequiresSecret(storage) {
+	if !server.StorageRequiresSecret(storage) {
 		// The storage switched to ambient credentials (for example an AWS IAM
 		// role), so previously stored credentials are removed.
 		for _, key := range keys {
@@ -249,5 +249,5 @@ func (s *SecretStorageServiceImpl) Update(storage db.SecretStorage) (err error) 
 }
 
 func (s *SecretStorageServiceImpl) GetSecretStorages(projectID int) (storages []db.SecretStorage, err error) {
-	return pro.GetSecretStorages(s.secretStorageRepo, projectID)
+	return server.GetSecretStorages(s.secretStorageRepo, projectID)
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/semaphoreui/semaphore/db_lib"
 	"github.com/semaphoreui/semaphore/pkg/jwt"
 	"github.com/semaphoreui/semaphore/pkg/tz"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/services/tasks/hooks"
 
 	"github.com/semaphoreui/semaphore/api/sockets"
@@ -156,7 +156,7 @@ func (t *TaskRunner) createTaskEvent() {
 		Description: &desc,
 	}
 
-	if err := t.pool.logWriteService.WriteTaskLog(pro_interfaces.TaskLogRecord{
+	if err := t.pool.logWriteService.WriteTaskLog(interfaces.TaskLogRecord{
 		ProjectID:    t.Task.ProjectID,
 		TemplateID:   t.Template.ID,
 		TemplateName: t.Template.Name,
