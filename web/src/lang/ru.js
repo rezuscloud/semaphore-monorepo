@@ -309,7 +309,6 @@ export default {
   deleteRunner: 'Удалить исполнителя',
   newRunnerToken: 'Новый токен исполнителя',
   askDeleteRunner: 'Вы действительно хотите удалить исполнителя {runner}?',
-  project_runners_only_pro: 'Исполнители на уровне проекта доступны только в версии <b>PRO</b>.',
   foss_runners_limited: 'Открытая версия имеет ограниченный функционал; полный функционал доступен в версии <b>PRO</b>.',
   learn_more_about_pro: 'Узнать больше',
 

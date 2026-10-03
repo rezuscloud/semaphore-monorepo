@@ -88,7 +88,6 @@ func Route(
 	secretStorageService server.SecretStorageService,
 	accessKeyService server.AccessKeyService,
 	environmentService server.EnvironmentService,
-	subscriptionService pro_interfaces.SubscriptionService,
 	jwtSigner jwt.Signer,
 	runnerService server.RunnerService,
 	workflowService pro_interfaces.WorkflowService,
@@ -108,15 +107,14 @@ func Route(
 	workflowController := proProjects.NewWorkflowController(workflowService, workflowStore)
 	workflowMiddlewareController := projects.NewWorkflowController(workflowStore)
 	backupController := projects.NewBackupController(workflowStore)
-	userController := NewUserController(subscriptionService)
-	usersController := NewUsersController(subscriptionService)
-	subscriptionController := proApi.NewSubscriptionController(store, store, store, terraformStore)
-	projectRunnerController := proProjects.NewProjectRunnerController(subscriptionService, runnerService)
+	userController := NewUserController()
+	usersController := NewUsersController()
+	projectRunnerController := proProjects.NewProjectRunnerController(runnerService)
 	globalRunnerController := NewGlobalRunnerController(runnerService)
 	taskController := projects.NewTaskController(store, ansibleTaskRepo)
 	rolesController := proApi.NewRolesController(store)
 	templateController := projects.NewTemplateController(store, store)
-	systemInfoController := NewSystemInfoController(subscriptionService)
+	systemInfoController := NewSystemInfoController()
 
 	r := mux.NewRouter()
 	r.NotFoundHandler = http.HandlerFunc(servePublic)
@@ -188,11 +186,6 @@ func Route(
 	authenticatedAPI.Use(csrfProtectionMiddleware, StoreMiddleware, JSONMiddleware, authentication)
 
 	authenticatedAPI.Path("/info").HandlerFunc(systemInfoController.GetSystemInfo).Methods("GET", "HEAD")
-
-	authenticatedAPI.Path("/subscription").HandlerFunc(subscriptionController.Activate).Methods("POST")
-	authenticatedAPI.Path("/subscription/refresh").HandlerFunc(subscriptionController.Refresh).Methods("POST")
-	authenticatedAPI.Path("/subscription").HandlerFunc(subscriptionController.GetSubscription).Methods("GET")
-	authenticatedAPI.Path("/subscription").HandlerFunc(subscriptionController.Delete).Methods("DELETE")
 
 	authenticatedAPI.Path("/projects").HandlerFunc(projects.GetProjects).Methods("GET", "HEAD")
 	authenticatedAPI.Path("/projects").HandlerFunc(projectsController.AddProject).Methods("POST")

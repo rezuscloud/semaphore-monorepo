@@ -169,28 +169,6 @@
 
     <v-divider style="margin-top: -1px" />
 
-    <v-alert
-      v-if="!features.secret_storage_management"
-      text
-      color="hsl(348deg, 86%, 61%)"
-      class="PageAlert"
-    >
-      <span class="mr-1" v-html="$t('secret_storage_only_pro')"></span>
-
-      <v-btn
-        dark
-        v-if="isAdmin"
-        color="hsl(348deg, 86%, 61%)"
-        @click="upgradeToPro('secret_storage_management')"
-      >
-        {{ $t('upgrade_to_pro') }}
-      </v-btn>
-
-      <span v-else style="font-weight: bold">
-        {{ $t('contact_admin_to_upgrade') }}
-      </span>
-    </v-alert>
-
     <v-data-table
       :headers="headers"
       :items="items"

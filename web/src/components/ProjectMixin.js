@@ -1,5 +1,4 @@
 import axios from 'axios';
-import EventBus from '@/event-bus';
 
 export default {
   props: {
@@ -16,10 +15,6 @@ export default {
           ...opts,
         })
       ).data;
-    },
-
-    upgradeToPro(feature) {
-      EventBus.$emit('i-subscription', { feature });
     },
 
     async loadProjectEndpoint(endpoint, opts) {

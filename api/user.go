@@ -13,18 +13,14 @@ import (
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
 	"github.com/semaphoreui/semaphore/pkg/tz"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
 	"github.com/semaphoreui/semaphore/util"
 )
 
 type UserController struct {
-	subscriptionService pro_interfaces.SubscriptionService
 }
 
-func NewUserController(subscriptionService pro_interfaces.SubscriptionService) *UserController {
-	return &UserController{
-		subscriptionService: subscriptionService,
-	}
+func NewUserController() *UserController {
+	return &UserController{}
 }
 
 func (c *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -35,16 +31,11 @@ func (c *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	var user struct {
 		db.User
-		CanCreateProject      bool `json:"can_create_project"`
-		HasActiveSubscription bool `json:"has_active_subscription"`
+		CanCreateProject bool `json:"can_create_project"`
 	}
 
 	user.User = *helpers.GetFromContext(r, "user").(*db.User)
 	user.CanCreateProject = user.Admin || util.Config.NonAdminCanCreateProject
-	user.HasActiveSubscription = c.subscriptionService.HasActiveSubscription()
-	if !user.HasActiveSubscription {
-		user.Pro = false
-	}
 	helpers.WriteJSON(w, http.StatusOK, user)
 }
 

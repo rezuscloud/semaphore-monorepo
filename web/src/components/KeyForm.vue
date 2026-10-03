@@ -37,17 +37,6 @@
         :class="!supportStorages && sourceStorageType === 'vault' ? '' : 'ml-4 mr-4 mt-6'"
         v-if="sourceStorageType"
       >
-        <v-alert
-          text
-          color="hsl(348deg, 86%, 61%)"
-          class="PageAlert PageAlert--flat-top"
-          v-if="!supportStorages && sourceStorageType === 'vault'"
-        >
-          <span v-html="$t('project_runners_only_pro')"></span>
-          <v-btn dark class="ml-2" color="hsl(348deg, 86%, 61%)" @click="upgradeToPro()">
-            {{ $t('upgrade_to_pro') }}
-          </v-btn>
-        </v-alert>
 
         <v-autocomplete
           v-if="supportStorages && sourceStorageType === 'vault'"

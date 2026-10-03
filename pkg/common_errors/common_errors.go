@@ -21,7 +21,6 @@ func NewUserErrorS(err string) error {
 	return &UserVisibleError{Err: errors.New(err)}
 }
 
-var ErrInvalidSubscription = errors.New("has no active subscription")
 
 func GetErrorContext() string {
 	pc, file, line, _ := runtime.Caller(1)

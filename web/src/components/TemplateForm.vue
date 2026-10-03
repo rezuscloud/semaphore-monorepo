@@ -346,18 +346,6 @@
               class="mb-4"
               :disabled="formSaving || !isExecutorImageAvailable"
             ></v-text-field>
-
-            <v-chip
-              v-if="!isExecutorImageAvailable"
-              color="hsl(348deg, 86%, 61%)"
-              text-color="white"
-              small
-              label
-              style="position: absolute; top: -10px; right: 15px"
-              @click="upgradeToPro('docker_executor')"
-            >
-              Upgrade to PRO
-            </v-chip>
           </div>
 
           <SurveyVars :vars="surveyVars" @change="setSurveyVars" />

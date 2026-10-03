@@ -301,7 +301,6 @@ export default {
   deleteRunner: 'Runner Verwijderen',
   newRunnerToken: 'Nieuwe Runner',
   askDeleteRunner: 'Wilt u runner {runner} echt verwijderen?',
-  project_runners_only_pro: 'Projectniveau runners zijn alleen beschikbaar in de <b>PRO</b> versie.',
   foss_runners_limited: 'De open-source versie heeft beperkte functionaliteit; volledige functionaliteit is in de <b>PRO</b> versie.',
   learn_more_about_pro: 'Leer meer',
 

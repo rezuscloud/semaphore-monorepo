@@ -301,7 +301,6 @@ export default {
   deleteRunner: 'Usuń uruchamiacz',
   newRunnerToken: 'Nowy uruchamiacz',
   askDeleteRunner: 'Czy na pewno chcesz usunąć uruchamiacz {runner}?',
-  project_runners_only_pro: 'Uruchamiacze na poziomie projektu są dostępne tylko w wersji <b>PRO</b>.',
   foss_runners_limited: 'Wersja open-source ma ograniczoną funkcjonalność; pełna funkcjonalność jest w wersji <b>PRO</b>.',
   learn_more_about_pro: 'Dowiedz się więcej',
 
