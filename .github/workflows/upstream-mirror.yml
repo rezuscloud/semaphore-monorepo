@@ -1,0 +1,51 @@
+# Upstream mirror — the trigger signal for event-driven fork-maintenance
+# (harmostes#192 pattern, ported from rezuscloud/signoz).
+#
+# Keeps refs/heads/rezus/mirror-2-19-stable in this repo tracking
+# semaphoreui/semaphore's 2-19-stable (the release line — tags are cut there;
+# develop has diverged). When the branch moves, GitHub fires a push webhook
+# to harmostes (HMAC-verified), which dispatches the fork-maintenance sync
+# (the engine fetches upstream itself for the merge — this branch is a
+# movement SIGNAL, not the sync transport).
+#
+# When upstream is unchanged, `git push` reports "Everything up-to-date",
+# GitHub fires NO push event, and harmostes dispatches nothing. A weekly
+# scheduled no-op run on the harmostes side (fork-maintenance-semaphore-weekly,
+# Saturday 04:00) bounds drift if this action ever breaks silently.
+#
+# IMPORTANT: this branch (rezus/mirror-2-19-stable) is a MIRROR — never
+# commit to it directly; it is force-reset to upstream on every run. Fork
+# work happens on rezus/2-19 (default) and lands via PRs.
+#
+# Runs on GitHub free-tier runners (public repo) — zero cluster compute.
+name: upstream-mirror
+
+on:
+  schedule:
+    - cron: "47 */6 * * *"   # offset from signoz's :30 / forgejo's :00 to dodge cron congestion
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: upstream-mirror
+  cancel-in-progress: true
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Fetch upstream release line
+        run: |
+          git remote add upstream https://github.com/semaphoreui/semaphore
+          git fetch upstream +refs/heads/2-19-stable:refs/remotes/upstream/2-19-stable --no-tags
+
+      - name: Push mirror branch (no-op when upstream is static)
+        run: |
+          git push --force origin refs/remotes/upstream/2-19-stable:refs/heads/rezus/mirror-2-19-stable
