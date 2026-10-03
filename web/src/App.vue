@@ -438,7 +438,7 @@
 
               <v-list-item
                 key="subscription"
-                v-if="isPro && user.admin"
+                v-if="featureEnabled && user.admin"
                 @click="subscriptionDialog = true"
               >
                 <v-list-item-icon>
@@ -498,7 +498,7 @@
                 </v-list-item-content>
               </v-list-item>
 
-              <v-list-item key="roles" to="/roles" v-if="isPro && user.admin">
+              <v-list-item key="roles" to="/roles" v-if="featureEnabled && user.admin">
                 <v-list-item-icon>
                   <v-icon>mdi-account-cog</v-icon>
                 </v-list-item-icon>
@@ -1071,8 +1071,8 @@ export default {
   },
 
   computed: {
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
 
     lang() {
@@ -1181,7 +1181,7 @@ export default {
         testId: 'sidebar-team',
       });
 
-      if (this.isPro && this.project.type === '') {
+      if (this.featureEnabled && this.project.type === '') {
         items.push({
           key: 'runners',
           icon: 'mdi-cogs',

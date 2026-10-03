@@ -45,7 +45,7 @@
       >{{ $t('newKey') }}</v-btn>
     </v-toolbar>
 
-    <KeyStoreMenu v-if="isPro" :project-id="projectId" />
+    <KeyStoreMenu v-if="featureEnabled" :project-id="projectId" />
     <v-divider v-else />
 
     <v-data-table
@@ -105,8 +105,8 @@ export default {
   },
 
   computed: {
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
   },
 

@@ -13,7 +13,6 @@ import (
 	"github.com/semaphoreui/semaphore/db/sql"
 	"github.com/semaphoreui/semaphore/pkg/random"
 	proFactory "github.com/semaphoreui/semaphore/pro/db/factory"
-	proFeatures "github.com/semaphoreui/semaphore/pro/pkg/features"
 	"github.com/semaphoreui/semaphore/util"
 	"github.com/snikch/goodman/transaction"
 )
@@ -417,14 +416,6 @@ func addToken(tok string, user int) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-// isProBuild reports whether the hooks binary was built with the PRO
-// implementation (go.work + pro_impl). The open-source stub of
-// pro/pkg/features returns an empty Features struct, while the PRO
-// implementation enables Workflows even for the standard (empty) plan.
-func isProBuild() bool {
-	return proFeatures.GetFeatures(&db.User{}, "").Workflows
 }
 
 // HELPERS

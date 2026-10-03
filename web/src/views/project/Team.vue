@@ -37,7 +37,7 @@
       </v-btn>
     </v-toolbar>
 
-    <TeamMenu v-if="isPro" :project-id="projectId" :system-info="systemInfo" />
+    <TeamMenu v-if="featureEnabled" :project-id="projectId" :system-info="systemInfo" />
 
     <v-divider style="margin-top: -1px" />
 
@@ -100,8 +100,8 @@ export default {
       return [...USER_ROLES, ...this.roles];
     },
 
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
   },
 

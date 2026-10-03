@@ -41,8 +41,8 @@ export default {
   },
 
   computed: {
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
   },
 

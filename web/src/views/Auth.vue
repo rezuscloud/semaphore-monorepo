@@ -387,7 +387,7 @@ export default {
 
   computed: {
     isPortal() {
-      return process.env.VUE_APP_BUILD_TYPE === 'pro_portal';
+      return false;
     },
   },
 
