@@ -342,27 +342,6 @@ semaphore runner start --config ./config.runner.json</pre
     <v-divider/>
 
     <v-alert
-      v-if="projectId && !features.project_runners"
-      text
-      color="hsl(348deg, 86%, 61%)"
-      class="PageAlert"
-    >
-      <span v-html="$t('project_runners_only_pro')"></span>
-      <v-btn
-        dark
-        v-if="isAdmin"
-        class="ml-2"
-        color="hsl(348deg, 86%, 61%)"
-        @click="upgradeToPro('project_runners')"
-      >
-        {{ $t('upgrade_to_pro') }}
-      </v-btn>
-      <span v-else style="font-weight: bold">
-        {{ $t('contact_admin_to_upgrade') }}
-      </span>
-    </v-alert>
-
-    <v-alert
       style="border-radius: 0"
       type="info"
       text

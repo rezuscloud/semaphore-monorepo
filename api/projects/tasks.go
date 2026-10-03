@@ -3,7 +3,6 @@ package projects
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pkg/common_errors"
 	"github.com/semaphoreui/semaphore/services/tasks"
 	"github.com/semaphoreui/semaphore/util"
 	log "github.com/sirupsen/logrus"
@@ -56,10 +54,6 @@ func (c *TaskController) AddTask(w http.ResponseWriter, r *http.Request) {
 		tpl.App.NeedTaskAlias(),
 	)
 
-	if errors.Is(err, common_errors.ErrInvalidSubscription) {
-		helpers.WriteErrorStatus(w, "No active subscription available.", http.StatusForbidden)
-		return
-	}
 
 	if err != nil {
 		log.WithFields(log.Fields{

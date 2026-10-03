@@ -130,7 +130,7 @@ func TestDeleteUser_RemovesOptions(t *testing.T) {
 	r = helpers.SetContextValue(r, "_user", target)
 	w := httptest.NewRecorder()
 
-	NewUsersController(nil).DeleteUser(w, r)
+	NewUsersController().DeleteUser(w, r)
 
 	assert.Equal(t, http.StatusNoContent, w.Code)
 

@@ -10,7 +10,6 @@ import (
 
 // NewProjectRunnerController creates a new ProjectRunnerController instance.
 func NewProjectRunnerController(
-	subscriptionService pro_interfaces.SubscriptionService,
 	runnerService server.RunnerService,
 ) pro_interfaces.ProjectRunnerController {
 	return &ProjectRunnerControllerImpl{}

@@ -10,7 +10,6 @@ import (
 	"github.com/pquerna/otp/totp"
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 
@@ -18,14 +17,12 @@ import (
 )
 
 type UsersController struct {
-	subscriptionService pro_interfaces.SubscriptionService
-	log                 *log.Entry
+	log *log.Entry
 }
 
-func NewUsersController(subscriptionService pro_interfaces.SubscriptionService) *UsersController {
+func NewUsersController() *UsersController {
 	return &UsersController{
-		subscriptionService: subscriptionService,
-		log:                 log.WithField("context", "api.users"),
+		log: log.WithField("context", "api.users"),
 	}
 }
 
@@ -73,25 +70,6 @@ func (c *UsersController) AddUser(w http.ResponseWriter, r *http.Request) {
 		c.log.WithField("editor", editor.Username).Debug("Not permitted to create users")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
-	}
-
-	if user.Pro {
-		ok, err := c.subscriptionService.CanAddProUser()
-
-		if err != nil {
-			c.log.WithError(err).Error("Failed to check Pro user limit")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if !ok {
-			helpers.WriteErrorStatus(
-				w,
-				"You have reached the limit of Pro users for your subscription.",
-				http.StatusForbidden,
-			)
-			return
-		}
 	}
 
 	var err error
@@ -188,25 +166,6 @@ func (c *UsersController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		}).Debug("Not permitted to mark users as Pro")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
-	}
-
-	if user.Pro {
-		ok, err := c.subscriptionService.CanAddProUser()
-
-		if err != nil {
-			c.log.WithError(err).Error("Failed to check Pro user limit")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if !ok {
-			helpers.WriteErrorStatus(
-				w,
-				"You have reached the limit of Pro users for your subscription.",
-				http.StatusForbidden,
-			)
-			return
-		}
 	}
 
 	if !editor.Admin && editor.ID != targetUser.ID {

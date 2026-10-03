@@ -15,25 +15,6 @@
       @yes="deleteItem(itemId)"
     />
 
-    <v-alert v-if="!features.custom_roles_management" text color="amber darken-3" class="PageAlert">
-      <span class="mr-1" v-html="$t('roles_only_enterprise')"></span>
-
-      <v-btn
-        dark
-        depressed
-        v-if="isAdmin"
-        color="amber darken-3"
-        href="https://semaphoreui.com/enterprise?utm_source=app&utm_content=feature_roles"
-        target="_blank"
-      >
-        {{ $t('upgrade_to_pro') }}
-      </v-btn>
-
-      <span v-else style="font-weight: bold">
-        {{ $t('contact_admin_to_upgrade_enterprise') }}
-      </span>
-    </v-alert>
-
     <v-btn
       :disabled="!features.custom_roles_management"
       color="primary"

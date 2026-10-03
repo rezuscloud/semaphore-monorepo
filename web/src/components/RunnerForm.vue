@@ -33,18 +33,6 @@
         outlined
         hide-details
       />
-
-      <v-chip
-        v-if="!isTagsAvailable"
-        color="hsl(348deg, 86%, 61%)"
-        text-color="white"
-        small
-        label
-        style="position: absolute; top: -10px; right: 15px"
-        @click="upgradeToPro('runners')"
-      >
-        Upgrade to PRO
-      </v-chip>
     </div>
 
     <v-row>

@@ -301,7 +301,6 @@ export default {
   deleteRunner: 'Supprimer l\'exécuteur',
   newRunnerToken: 'Nouvel exécuteur',
   askDeleteRunner: 'Voulez-vous vraiment supprimer l\'exécuteur {runner} ?',
-  project_runners_only_pro: 'Les exécuteurs au niveau du projet ne sont disponibles que dans la version <b>PRO</b>.',
   foss_runners_limited: 'La version open-source a des fonctionnalités limitées ; la fonctionnalité complète est dans la version <b>PRO</b>.',
   learn_more_about_pro: 'En savoir plus',
 

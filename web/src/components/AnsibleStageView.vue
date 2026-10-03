@@ -1,14 +1,5 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div style="overflow: hidden" class="pb-5">
-    <v-alert text color="hsl(348deg, 86%, 61%)" class="PageAlert" v-if="!features.task_summary">
-      <span class="mr-2">
-        This is <b>DEMO</b> data. Task summary available only in <b>PRO</b> version.
-      </span>
-
-      <v-btn dark class="ml-2" color="hsl(348deg, 86%, 61%)" @click="upgradeToPro('task_summary')">
-        {{ $t('upgrade_to_pro') }}
-      </v-btn>
-    </v-alert>
 
     <div class="pl-5 pt-5 d-flex" style="column-gap: 10px">
       <div class="AnsibleServerStatus AnsibleServerStatus--ok">

@@ -301,7 +301,6 @@ export default {
   deleteRunner: 'Excluir Executor',
   newRunnerToken: 'Novo Executor',
   askDeleteRunner: 'Você realmente deseja excluir o executor {runner}?',
-  project_runners_only_pro: 'Executores em nível de projeto estão disponíveis apenas na versão <b>PRO</b>.',
   foss_runners_limited: 'A versão de código aberto tem funcionalidade limitada; a funcionalidade completa está na versão <b>PRO</b>.',
   learn_more_about_pro: 'Saiba mais',
 

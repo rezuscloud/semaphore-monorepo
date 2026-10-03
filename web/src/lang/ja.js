@@ -301,7 +301,6 @@ export default {
   deleteRunner: 'ランナーを削除',
   newRunnerToken: '新しいランナー',
   askDeleteRunner: '本当にランナー {runner} を削除しますか？',
-  project_runners_only_pro: 'プロジェクトレベルのランナーは<b>PRO</b>バージョンでのみ利用可能です。',
   foss_runners_limited: 'オープンソース版は機能が制限されています。完全な機能は<b>PRO</b>バージョンにあります。',
   learn_more_about_pro: '詳細を学ぶ',
 

@@ -301,7 +301,6 @@ export default {
   deleteRunner: '删除运行器',
   newRunnerToken: '新运行器',
   askDeleteRunner: '您真的想删除运行器 {runner} 吗？',
-  project_runners_only_pro: '项目级运行器仅在 <b>专业版</b> 中可用。',
   foss_runners_limited: '开源版本功能有限；完整功能在 <b>专业版</b> 中。',
   learn_more_about_pro: '了解更多',
 

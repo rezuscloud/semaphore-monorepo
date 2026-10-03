@@ -381,16 +381,9 @@ export default {
     + 'token stops working and the runner goes offline until it re-registers with '
     + 'the new token. Continue?',
   askDeleteRunner: 'Do you really want to delete runner {runner}?',
-  roles_only_enterprise: 'Roles are only available in <b>Enterprise</b> edition.',
-  ha_only_enterprise: 'High availability are only available in <b>Enterprise</b> edition.',
-  project_runners_only_pro: 'Project-level runners are only available for <b>PRO</b> users.',
-  secret_storage_only_pro: 'Secret storages are only available for <b>PRO</b> users.',
   foss_runners_limited:
     'The open-source version has limited functionality; full functionality is in the <b>PRO</b> version.',
   learn_more_about_pro: 'Learn more',
-  upgrade_to_pro: 'Upgrade',
-  contact_admin_to_upgrade: 'Contact your admin to activate PRO features.',
-  contact_admin_to_upgrade_enterprise: 'Contact your admin to activate Enterprise features.',
 
   projectRestoreResult: 'Project restore results',
   projectWithNameRestored: 'Project {projectName} successfully restored.',

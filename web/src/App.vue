@@ -72,34 +72,6 @@
     </EditDialog>
 
     <EditDialog
-      v-model="subscriptionDialog"
-      hide-buttons
-      v-if="user"
-      event-name="i-user"
-      dont-close-on-save
-    >
-      <template v-slot:title="{}">
-        {{
-          user.has_active_subscription ? 'Subscription &amp; Billing' : 'Upgrade to Semaphore PRO'
-        }}
-      </template>
-
-      <template v-slot:form="{ onSave, onError, needSave, needReset }">
-        <SubscriptionForm
-          item-id="new"
-          @save="
-            onSave();
-            onSubscriptionKeyUpdates();
-          "
-          @error="onError"
-          :need-save="needSave"
-          :need-reset="needReset"
-          :feature="subscriptionDialog_feature"
-        />
-      </template>
-    </EditDialog>
-
-    <EditDialog
       v-model="restoreProjectDialog"
       save-button-text="Restore"
       :title="$t('restoreProject')"
@@ -436,26 +408,6 @@
                 </v-list-item-content>
               </v-list-item>
 
-              <v-list-item
-                key="subscription"
-                v-if="featureEnabled && user.admin"
-                @click="subscriptionDialog = true"
-              >
-                <v-list-item-icon>
-                  <v-icon color="#f14668" style="transform: scale(1.4)">
-                    mdi-professional-hexagon
-                  </v-icon>
-                </v-list-item-icon>
-
-                <v-list-item-content>
-                  {{
-                    user.has_active_subscription
-                      ? 'Subscription &amp; Billing'
-                      : 'Upgrade to PRO or EE'
-                  }}
-                </v-list-item-content>
-              </v-list-item>
-
               <v-divider />
 
               <v-list-item key="runners" to="/runners" v-if="user.admin">
@@ -629,34 +581,6 @@
   .nav-more-title {
     opacity: 0.6;
   }
-}
-
-.NewProSubscriptionMenuItem {
-  transition: 0.2s transform;
-
-  .v-list-item__content,
-  .v-list-item__icon {
-    transition: 0.5s transform;
-  }
-
-  &:hover {
-    transform: scale(1.05) translateY(-1px);
-
-    // .v-list-item__content {
-    //   transform: scale(1.05) translateX(2px);
-    // }
-    .v-list-item__icon {
-      // transform: rotate(-360deg);
-    }
-  }
-}
-
-.ActivatePremiumSubscriptionButton {
-  background: hsl(348deg, 86%, 61%);
-  //transform: scale(0.9);
-  //border-radius: 6px;
-  //transition: 0.2s transform;
-  //margin-bottom: 10px;
 }
 
 .theme--dark {
@@ -890,7 +814,6 @@ import UserForm from '@/components/UserForm.vue';
 import EventBus from '@/event-bus';
 import socket from '@/socket';
 
-import SubscriptionForm from '@/components/SubscriptionForm.vue';
 import RestoreProjectForm from '@/components/RestoreProjectForm.vue';
 import YesNoDialog from '@/components/YesNoDialog.vue';
 import TaskLogDialog from '@/components/TaskLogDialog.vue';
@@ -970,7 +893,6 @@ function getSystemLang() {
 export default {
   name: 'App',
   components: {
-    SubscriptionForm,
     TaskLogDialog,
     YesNoDialog,
     RestoreProjectForm,
@@ -995,8 +917,6 @@ export default {
       userDialog: null,
       hideUserDialogButtons: false,
 
-      subscriptionDialog: null,
-      subscriptionDialog_feature: null,
       systemInfoDialog: null,
 
       restoreProjectDialog: null,
@@ -1235,11 +1155,6 @@ export default {
   },
 
   mounted() {
-    EventBus.$on('i-subscription', (e) => {
-      this.subscriptionDialog_feature = e.feature;
-      this.subscriptionDialog = true;
-    });
-
     EventBus.$on('i-snackbar', (e) => {
       this.snackbar = true;
       this.snackbarColor = e.color;
@@ -1365,15 +1280,6 @@ export default {
   },
 
   methods: {
-    async onSubscriptionKeyUpdates() {
-      EventBus.$emit('i-snackbar', {
-        color: 'success',
-        text: 'Subscription activated',
-      });
-
-      await this.loadUserInfo();
-    },
-
     showNewProjectDialogue(projectType = '') {
       this.newProjectDialog = true;
       this.newProjectType = projectType;
