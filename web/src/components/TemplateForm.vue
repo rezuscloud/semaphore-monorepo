@@ -736,7 +736,7 @@ export default {
 
   computed: {
     // The image override is only honoured by the container-based executors, which
-    // are themselves paid features: Docker in PRO, Kubernetes in Enterprise.
+    // land with their feature milestones (Docker executor, Kubernetes executor).
     isExecutorImageAvailable() {
       return !!(this.features?.docker_executor || this.features?.k8s_executor);
     },

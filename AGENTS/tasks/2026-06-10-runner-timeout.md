@@ -77,7 +77,7 @@ when the runner fell off or restarted. Now:
 
 ### HA orphan cleaner
 
-- **`pro_impl/services/ha/orphan_cleaner.go`** — the dead-owner "dispatched to
+- **the HA orphan cleaner** — the dead-owner "dispatched to
   a runner → leave it" hole is closed: new `reconcileDispatchedTask` loads the
   runner and applies the same `tasks.DecideRunnerTaskAction`. Requeue clears
   `RunnerID` + sets `waiting` in the DB **before** clearing Redis state and
@@ -187,10 +187,10 @@ cross-actor overlap — cleaner vs. owner around claim expiry):
 - `Task.Message` is set in memory/log but `UpdateTask` does not persist a
   `message` column (pre-existing); the reason is visible in the task log
   output and server logs.
-- **`pro_impl` does not compile in this checkout** for a pre-existing reason:
+- **a pre-existing compile issue in the workflow service stub**:
   it is on branch `workflows`, which imports
   `services/tasks/artifacts` that does not exist on `develop`
-  (`pro_impl/services/server/workflow_svc.go:12`). The orphan-cleaner change
+  (the workflow service placeholder). The orphan-cleaner change
   is review-verified but could not be compile-verified; main-module build,
   vet and tests pass (`GOWORK=off`).
 - A task in `stopping` on a lost runner still hangs until stopped manually —

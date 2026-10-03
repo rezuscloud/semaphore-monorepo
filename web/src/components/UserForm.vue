@@ -94,15 +94,6 @@
                 :label="$t('adminUser')"
               ></v-checkbox>
             </v-col>
-            <v-col cols="6" v-if="featureEnabled">
-              <v-checkbox
-                :disabled="!isAdmin"
-                dense
-                hide-details
-                v-model="item.pro"
-                :label="$t('Pro user')"
-              ></v-checkbox>
-            </v-col>
             <v-col cols="6" v-if="isAdmin">
               <v-checkbox
                 :disabled="!isNew"

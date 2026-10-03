@@ -5,8 +5,8 @@ import (
 	"github.com/semaphoreui/semaphore/internal/interfaces"
 )
 
-// workflowService is the open-source no-op stub for the Pro workflow
-// orchestration service. The task pool still calls HandleWorkflowTaskCompletion
+// workflowService is a no-op placeholder for the workflow orchestration
+// service (the feature lands with its milestone). The task pool still calls HandleWorkflowTaskCompletion
 // / GetWorkflowRunArtifacts on every finished task, so the methods must be safe
 // no-ops; the workflow API itself is disabled via the stub controller and the
 // Workflows feature flag.
@@ -16,8 +16,8 @@ func NewWorkflowService(workflowRepo db.WorkflowManager, templateReceiver db.Wor
 	return &workflowService{}
 }
 
-// NewWorkflowReconciler is the open-source no-op stub: workflows are a Pro
-// feature, so there is nothing to reconcile. Callers must nil-check.
+// NewWorkflowReconciler returns nil while workflows are not implemented yet,
+// so there is nothing to reconcile. Callers must nil-check.
 func NewWorkflowReconciler(_ db.WorkflowManager, _ interfaces.WorkflowService) interfaces.WorkflowReconciler {
 	return nil
 }

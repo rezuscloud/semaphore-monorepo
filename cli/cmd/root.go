@@ -261,7 +261,7 @@ func runService() {
 	// The workflow reconciler periodically progresses non-terminal runs so
 	// approval timeouts fire and statuses converge without a browser poll or a
 	// task completion. Cluster-safe: each pass takes the per-run lock. Nil in
-	// the open-source build (workflows are Pro-gated).
+	// workflows are not implemented yet (feature milestone pending).
 	if workflowReconciler := featServer.NewWorkflowReconciler(workflowStore, workflowService); workflowReconciler != nil {
 		workflowReconciler.Start()
 		defer workflowReconciler.Stop()

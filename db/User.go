@@ -17,7 +17,6 @@ type User struct {
 	Admin    bool      `db:"admin" json:"admin"`
 	External bool      `db:"external" json:"external"`
 	Alert    bool      `db:"alert" json:"alert"`
-	Pro      bool      `db:"pro" json:"pro"`
 
 	Totp     *UserTotp     `db:"-" json:"totp,omitempty"`
 	EmailOtp *UserEmailOtp `db:"-" json:"email_otp,omitempty"`

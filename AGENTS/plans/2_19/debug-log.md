@@ -233,7 +233,7 @@ so namespaces stay stable. High-value targets:
 | `session`/`ldap` | `api/login.go`, `api/auth.go`                 | auth flow, provider selection, failures                    |
 | `schedule`       | `services/schedules/`                         | cron parsing, dedup decisions, fire/skip                   |
 | `db`             | `db/sql/SqlDb.go`, `db/Store.go`              | slow/failed queries, migrations (guard against secrets)    |
-| `ha`             | `pro/services/ha/`                            | node registry heartbeats, dedup, orphan cleanup, broadcast |
+| `ha`             | `internal/services/ha/`                       | node registry heartbeats, dedup, orphan cleanup, broadcast |
 
 Guidelines for the new statements:
 

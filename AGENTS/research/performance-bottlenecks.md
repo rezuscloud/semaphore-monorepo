@@ -171,7 +171,7 @@ never held across I/O; HA `TryClaim`/`DeleteClaim` placement; the schedule pool 
   `stage_parsers.MoveToNextStage` in `db.StoreSession` **per record** (lines 314-341). `StoreSession` (
   `db/Store.go:790-800`) does `Connect()/Close()` around the callback unless `PermanentConnection()` — i.e. a **DB
   connect/close per output line** on the single shared `handleLogs` goroutine. In this build `MoveToNextStage` is a
-  no-op stub but still pays the wrapper cost per line; the Pro build does real per-line DB work.
+  no-op stub but still pays the wrapper cost per line; the real implementation does per-line DB work.
   *Fix:* hoist the session out of the loop (one session per flush); only run stage parsing for stage-using apps; batch
   its DB effects.
 - **`unique(task_id, time)` drops whole batches (Finding 4, High + correctness).** `SqlDb.go:93`

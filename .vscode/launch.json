@@ -62,7 +62,7 @@
             }
         },
         {
-            "name": "Launch Frontend (PRO)",
+            "name": "Launch Frontend",
             "type": "node",
             "request": "launch",
             "runtimeExecutable": "npm",

@@ -227,7 +227,6 @@ type OptionsManager interface {
 
 // UserManager handles user-related operations
 type UserManager interface {
-	GetProUserCount() (int, error)
 	GetUserCount() (int, error)
 	GetUsers(params RetrieveQueryParams) ([]User, error)
 	CreateUserWithoutPassword(user User) (User, error)

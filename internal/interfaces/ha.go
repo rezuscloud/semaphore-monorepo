@@ -22,7 +22,7 @@ type OrphanCleaner interface {
 
 // ClusterInspector is the read surface for the Cluster Dashboard. It exposes
 // cluster membership and Redis keyspace stats. The Redis-backed implementation
-// is supplied by pro_impl; the OSS stub returns nil.
+// is implemented with the HA feature milestone; the placeholder returns nil.
 type ClusterInspector interface {
 	// Nodes returns current cluster membership with heartbeat info.
 	Nodes() ([]NodeInfo, error)

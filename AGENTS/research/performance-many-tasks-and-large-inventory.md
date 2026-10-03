@@ -355,9 +355,9 @@ func (p *TaskPool) writeLogs(logs []logRecord) {
 connection, this opens/closes a DB connection **per output line** — 100k connect/close
 cycles per task on the single `handleLogs` goroutine that serves *all* tasks. Even with a
 permanent connection you pay 500 closure allocations + 500 calls per flush. (In this OSS
-build `MoveToNextStage` is a no-op stub at `pro/pkg/stage_parsers/next_step.go:8-20`, so
-the body does nothing useful yet still pays the wrapper cost; the Pro build does real
-per-line DB work.) `handleLogs` is a single goroutine shared by all tasks, so any
+build `MoveToNextStage` is a no-op stub at `internal/pkg/stage_parsers/next_step.go`, so
+the body does nothing useful yet still pays the wrapper cost; the real
+implementation does per-line DB work.) `handleLogs` is a single goroutine shared by all tasks, so any
 per-record DB work here is a global serialization point.
 
 **Fix:** Open one session, process all records, batch-insert, close once. Only invoke

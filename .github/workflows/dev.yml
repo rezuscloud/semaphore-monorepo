@@ -15,6 +15,24 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v6
 
+      - name: Naming guard
+        run: |
+          # This distribution carries no edition vocabulary. Exclusions, each
+          # justified: web/public = vendored third-party bundles (swagger-ui);
+          # web/package-lock.json = third-party dependency manifest;
+          # web/src/lang = "pro" is an ordinary word in cs/pl/uk sentence text;
+          # db/sql/migrations = immutable migration history; the literal
+          # "Vault Enterprise" names HashiCorp's product, not an edition of
+          # this application.
+          set -e
+          hits=$(git grep -nIE 'pro_impl|pro_interfaces|semaphorepro|APP_BUILD_TYPE|VUE_APP_BUILD_TYPE|pro_selfhosted|pro_portal' -- . ':(exclude).github/workflows/dev.yml' || true)
+          if [ -n "$hits" ]; then echo "$hits"; echo "::error::edition-machinery vocabulary found"; exit 1; fi
+          hits=$(git grep -inIE '\b(pro|enterprise)s?\b' -- \
+            ':(exclude)web/public' ':(exclude)web/package-lock.json' ':(exclude)web/src/lang' \
+            ':(exclude)db/sql/migrations' ':(exclude).github/workflows/dev.yml' \
+            | grep -v 'Vault Enterprise' || true)
+          if [ -n "$hits" ]; then echo "$hits"; echo "::error::edition name found"; exit 1; fi
+
       - name: Setup golang
         uses: actions/setup-go@v5
         with:

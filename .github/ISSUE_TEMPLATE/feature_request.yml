@@ -47,11 +47,11 @@ body:
       multiple: false
       options:
         - nice to have
-        - nice to have for enterprise usage
+        - nice to have for organizational usage
         - better user experience
         - security improvements
         - major improvement to user experience
-        - must have for enterprise usage
+        - must have for organizational usage
         - must have
     validations:
       required: true

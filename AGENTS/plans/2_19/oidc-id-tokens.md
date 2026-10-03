@@ -137,7 +137,7 @@ Files: `api/oidc.go`, registration in `api/router.go` next to the health endpoin
 
 ## 6. Feature gating
 
-Add a flag to `pro_interfaces/features.go`:
+Add a flag to `internal/interfaces/featues.go`:
 
 ```go
 type Features struct {

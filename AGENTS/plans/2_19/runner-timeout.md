@@ -39,7 +39,7 @@ returns:
   only when `util.Config.MaxTaskDurationSec > 0`. It is **opt-in** and
   **node-local**: if the duration is unset (the default) or the dispatching
   node restarts, nothing fails the task.
-- The HA orphan cleaner (`pro_impl/services/ha/orphan_cleaner.go`) reconciles
+- The HA orphan cleaner (implemented with the HA feature milestone) reconciles
   dead **nodes**, not dead **runners**. Its own comment is explicit
   (`orphan_cleaner.go:174-175`): *"dispatched to a runner that keeps executing
   it independently of the dead node. Leave it."* It assumes the runner is
@@ -273,7 +273,7 @@ with an explicit offline state it makes no sense and is removed.
   `reconcileInterval` (≈30s). No global variables — the ticker lives on the
   pool instance.
 - **HA / cluster:** extend `RedisOrphanCleaner.cleanupRunning`
-  (`pro_impl/services/ha/orphan_cleaner.go:93-177`). Today the branch at
+  (the orphan cleaner's `cleanupRunning`). Today the branch at
   `:174-175` ("dispatched to a runner → leave it") is precisely the hole.
   Replace "leave it" with the runner liveness/generation check from step 3,
   failing the task via the same helper and calling `removeStaleState` to clear
