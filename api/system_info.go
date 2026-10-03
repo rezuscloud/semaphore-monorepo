@@ -5,8 +5,8 @@ import (
 
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
-	proFeatures "github.com/semaphoreui/semaphore/pro/pkg/features"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/pkg/features"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/util"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +21,7 @@ type SystemInfo struct {
 	UseRemoteRunner   bool                    `json:"use_remote_runner"`
 	AuthMethods       LoginAuthMethods        `json:"auth_methods"`
 	LoginWithPassword bool                    `json:"login_with_password"`
-	Features          pro_interfaces.Features `json:"features"`
+	Features          interfaces.Features `json:"features"`
 	GitClient         string                  `json:"git_client"`
 	ScheduleTimezone  string                  `json:"schedule_timezone"`
 	Teams             *util.TeamsConfig       `json:"teams"`
@@ -80,7 +80,7 @@ func (c *SystemInfoController) GetSystemInfo(w http.ResponseWriter, r *http.Requ
 		UseRemoteRunner:   util.Config.UseRemoteRunner,
 		AuthMethods:       authMethods,
 		LoginWithPassword: !util.Config.PasswordLoginDisable,
-		Features:          proFeatures.GetFeatures(user, plan),
+		Features:          features.GetFeatures(user, plan),
 		GitClient:         util.Config.GitClientId,
 		ScheduleTimezone:  timezone,
 		Teams:             util.Config.Teams,

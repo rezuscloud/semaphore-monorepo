@@ -17,10 +17,10 @@ import (
 	"github.com/semaphoreui/semaphore/db"
 	"github.com/semaphoreui/semaphore/db/factory"
 	"github.com/semaphoreui/semaphore/pkg/debuglog"
-	proFactory "github.com/semaphoreui/semaphore/pro/db/factory"
-	proHA "github.com/semaphoreui/semaphore/pro/services/ha"
-	proServer "github.com/semaphoreui/semaphore/pro/services/server"
-	proTasks "github.com/semaphoreui/semaphore/pro/services/tasks"
+	featFactory "github.com/semaphoreui/semaphore/internal/db/factory"
+	featHA "github.com/semaphoreui/semaphore/internal/services/ha"
+	featServer "github.com/semaphoreui/semaphore/internal/services/server"
+	featTasks "github.com/semaphoreui/semaphore/internal/services/tasks"
 	"github.com/semaphoreui/semaphore/services/schedules"
 	"github.com/semaphoreui/semaphore/services/server"
 	"github.com/semaphoreui/semaphore/services/tasks"
@@ -162,10 +162,10 @@ func runService() {
 	// Initialize HA node identity before any component that uses it.
 	util.InitHANodeID()
 
-	state := proTasks.NewTaskStateStore()
-	terraformStore := proFactory.NewTerraformStore(store)
-	ansibleTaskRepo := proFactory.NewAnsibleTaskRepository(store)
-	workflowStore := proFactory.NewWorkflowStore(store)
+	state := featTasks.NewTaskStateStore()
+	terraformStore := featFactory.NewTerraformStore(store)
+	ansibleTaskRepo := featFactory.NewAnsibleTaskRepository(store)
+	workflowStore := featFactory.NewWorkflowStore(store)
 
 	projectService := server.NewProjectService(store, store)
 	encryptionService := server.NewAccessKeyEncryptionService(store, store, store, store)
@@ -182,7 +182,7 @@ func runService() {
 	secretStorageSyncScheduler := server.NewSecretStorageSyncScheduler(store, secretStorageService)
 	environmentService := server.NewEnvironmentService(store, encryptionService, store)
 	runnerService := server.NewRunnerService(store)
-	logWriteService := proServer.NewLogWriteService()
+	logWriteService := featServer.NewLogWriteService()
 
 	taskPool := tasks.CreateTaskPool(
 		store,
@@ -201,7 +201,7 @@ func runService() {
 	// enqueuer), then inject the service back into the pool. The run locker is
 	// Redis-backed in HA mode (cluster-wide progression locks) and nil
 	// otherwise, which makes the service fall back to its in-process locker.
-	workflowService := proServer.NewWorkflowService(workflowStore, store, &taskPool, proHA.NewWorkflowRunLocker())
+	workflowService := featServer.NewWorkflowService(workflowStore, store, &taskPool, featHA.NewWorkflowRunLocker())
 	taskPool.SetWorkflowService(workflowService)
 
 	schedulePool := schedules.CreateSchedulePool(
@@ -221,7 +221,7 @@ func runService() {
 	// 2. Schedule deduplication: only one node fires each schedule occurrence
 	// 3. WebSocket broadcaster: real-time events reach clients on all nodes
 	// 4. Orphan cleaner: tasks from dead nodes are marked as failed
-	if nodeRegistry := proHA.NewNodeRegistry(); nodeRegistry != nil {
+	if nodeRegistry := featHA.NewNodeRegistry(); nodeRegistry != nil {
 		if err := nodeRegistry.Start(); err != nil {
 			log.WithError(err).Fatal("failed to start HA node registry")
 		}
@@ -232,9 +232,9 @@ func runService() {
 	// Cluster inspector powers the admin Cluster Dashboard. It is nil when HA
 	// is disabled; the dashboard then falls back to the local task pool. The
 	// instance is injected per-request below.
-	clusterInspector := proHA.NewClusterInspector()
+	clusterInspector := featHA.NewClusterInspector()
 
-	if dedup := proHA.NewScheduleDeduplicator(); dedup != nil {
+	if dedup := featHA.NewScheduleDeduplicator(); dedup != nil {
 		schedulePool.SetDeduplicator(dedup)
 		secretStorageSyncScheduler.SetTickDeduplicator(dedup)
 	}
@@ -253,7 +253,7 @@ func runService() {
 		}()
 	}
 
-	if orphanCleaner := proHA.NewOrphanCleaner(store); orphanCleaner != nil {
+	if orphanCleaner := featHA.NewOrphanCleaner(store); orphanCleaner != nil {
 		orphanCleaner.Start()
 		defer orphanCleaner.Stop()
 	}
@@ -262,7 +262,7 @@ func runService() {
 	// approval timeouts fire and statuses converge without a browser poll or a
 	// task completion. Cluster-safe: each pass takes the per-run lock. Nil in
 	// the open-source build (workflows are Pro-gated).
-	if workflowReconciler := proServer.NewWorkflowReconciler(workflowStore, workflowService); workflowReconciler != nil {
+	if workflowReconciler := featServer.NewWorkflowReconciler(workflowStore, workflowService); workflowReconciler != nil {
 		workflowReconciler.Start()
 		defer workflowReconciler.Stop()
 	}
@@ -284,7 +284,7 @@ func runService() {
 	// channel is being consumed when LocalBroadcast is called.
 	go sockets.StartWS()
 
-	if wsBroadcaster := proHA.NewWSBroadcaster(); wsBroadcaster != nil {
+	if wsBroadcaster := featHA.NewWSBroadcaster(); wsBroadcaster != nil {
 		sockets.SetBroadcaster(wsBroadcaster)
 		wsBroadcaster.Start()
 		defer wsBroadcaster.Stop()

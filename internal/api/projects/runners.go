@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/semaphoreui/semaphore/api/helpers"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/services/server"
 )
 
 // NewProjectRunnerController creates a new ProjectRunnerController instance.
 func NewProjectRunnerController(
 	runnerService server.RunnerService,
-) pro_interfaces.ProjectRunnerController {
+) interfaces.ProjectRunnerController {
 	return &ProjectRunnerControllerImpl{}
 }
 

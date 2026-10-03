@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/semaphoreui/semaphore/api/helpers"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	taskServices "github.com/semaphoreui/semaphore/services/tasks"
 	"github.com/semaphoreui/semaphore/util"
 	log "github.com/sirupsen/logrus"
@@ -13,8 +13,8 @@ import (
 
 // clusterInspectorFromContext returns the ClusterInspector injected by the
 // router middleware, or nil if HA is disabled / the overlay is absent.
-func clusterInspectorFromContext(r *http.Request) pro_interfaces.ClusterInspector {
-	ci, _ := helpers.GetFromContext(r, "cluster_inspector").(pro_interfaces.ClusterInspector)
+func clusterInspectorFromContext(r *http.Request) interfaces.ClusterInspector {
+	ci, _ := helpers.GetFromContext(r, "cluster_inspector").(interfaces.ClusterInspector)
 	return ci
 }
 

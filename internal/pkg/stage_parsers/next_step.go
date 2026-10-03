@@ -2,13 +2,13 @@ package stage_parsers
 
 import (
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 )
 
 func MoveToNextStage(
 	store db.Store,
 	ansibleTaskRepo db.AnsibleTaskRepository,
-	logWriter pro_interfaces.LogWriteService,
+	logWriter interfaces.LogWriteService,
 	app db.TemplateApp,
 	projectID int,
 	currentState any,

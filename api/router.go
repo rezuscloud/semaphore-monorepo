@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 
-	proApi "github.com/semaphoreui/semaphore/pro/api"
-	proProjects "github.com/semaphoreui/semaphore/pro/api/projects"
+	"github.com/semaphoreui/semaphore/internal/api"
+	featProjects "github.com/semaphoreui/semaphore/internal/api/projects"
 	"github.com/semaphoreui/semaphore/services/server"
 	taskServices "github.com/semaphoreui/semaphore/services/tasks"
 
@@ -90,7 +90,7 @@ func Route(
 	environmentService server.EnvironmentService,
 	jwtSigner jwt.Signer,
 	runnerService server.RunnerService,
-	workflowService pro_interfaces.WorkflowService,
+	workflowService interfaces.WorkflowService,
 ) *mux.Router {
 
 	projectController := &projects.ProjectController{ProjectService: projectService}
@@ -102,17 +102,17 @@ func Route(
 	repositoryController := projects.NewRepositoryController(accessKeyInstallationService)
 	keyController := projects.NewKeyController(accessKeyService)
 	projectsController := projects.NewProjectsController(accessKeyService)
-	terraformController := proApi.NewTerraformController(encryptionService, terraformStore, store)
-	terraformInventoryController := proProjects.NewTerraformInventoryController(terraformStore)
-	workflowController := proProjects.NewWorkflowController(workflowService, workflowStore)
+	terraformController := api.NewTerraformController(encryptionService, terraformStore, store)
+	terraformInventoryController := featProjects.NewTerraformInventoryController(terraformStore)
+	workflowController := featProjects.NewWorkflowController(workflowService, workflowStore)
 	workflowMiddlewareController := projects.NewWorkflowController(workflowStore)
 	backupController := projects.NewBackupController(workflowStore)
 	userController := NewUserController()
 	usersController := NewUsersController()
-	projectRunnerController := proProjects.NewProjectRunnerController(runnerService)
+	projectRunnerController := featProjects.NewProjectRunnerController(runnerService)
 	globalRunnerController := NewGlobalRunnerController(runnerService)
 	taskController := projects.NewTaskController(store, ansibleTaskRepo)
-	rolesController := proApi.NewRolesController(store)
+	rolesController := api.NewRolesController(store)
 	templateController := projects.NewTemplateController(store, store)
 	systemInfoController := NewSystemInfoController()
 

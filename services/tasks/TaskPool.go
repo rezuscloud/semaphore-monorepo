@@ -8,8 +8,8 @@ import (
 	"github.com/semaphoreui/semaphore/pkg/jwt"
 	"github.com/semaphoreui/semaphore/pkg/random"
 	"github.com/semaphoreui/semaphore/pkg/tz"
-	"github.com/semaphoreui/semaphore/pro/pkg/stage_parsers"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/pkg/stage_parsers"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/services/server"
 
 	"github.com/semaphoreui/semaphore/db"
@@ -56,7 +56,7 @@ type TaskPool struct {
 
 	store                  db.Store
 	ansibleTaskRepo        db.AnsibleTaskRepository
-	logWriteService        pro_interfaces.LogWriteService
+	logWriteService        interfaces.LogWriteService
 	inventoryService       server.InventoryService
 	encryptionService      server.AccessKeyEncryptionService
 	keyInstallationService server.AccessKeyInstallationService
@@ -77,7 +77,7 @@ type TaskPool struct {
 	// workflowService orchestrates workflow runs (a Pro feature). It is injected
 	// after construction via SetWorkflowService; the pool only calls back into it
 	// when a workflow task finishes. nil in tests / before wiring.
-	workflowService pro_interfaces.WorkflowService
+	workflowService interfaces.WorkflowService
 	// stop signals the background loops started by Run to exit. Closing it (via
 	// Stop) terminates the runner-task reconcile loop and Run's own select.
 	// Channels are used rather than sync.WaitGroup/sync.Once because TaskPool is
@@ -99,7 +99,7 @@ func CreateTaskPool(
 	inventoryService server.InventoryService,
 	encryptionService server.AccessKeyEncryptionService,
 	keyInstallationService server.AccessKeyInstallationService,
-	logWriteService pro_interfaces.LogWriteService,
+	logWriteService interfaces.LogWriteService,
 	signer jwt.Signer,
 ) TaskPool {
 	p := TaskPool{
@@ -132,7 +132,7 @@ func (p *TaskPool) StateStore() TaskStateStore {
 // SetWorkflowService injects the workflow orchestration service. It is wired
 // after the pool is created (the service needs the pool as its task enqueuer,
 // and the pool needs the service to progress runs as tasks finish).
-func (p *TaskPool) SetWorkflowService(svc pro_interfaces.WorkflowService) {
+func (p *TaskPool) SetWorkflowService(svc interfaces.WorkflowService) {
 	p.workflowService = svc
 }
 

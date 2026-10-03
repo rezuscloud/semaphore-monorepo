@@ -1,4 +1,4 @@
-package pro_interfaces
+package interfaces
 
 import (
 	"net/http"

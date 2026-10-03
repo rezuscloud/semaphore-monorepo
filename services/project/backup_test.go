@@ -7,7 +7,7 @@ import (
 	"github.com/semaphoreui/semaphore/db/sql"
 
 	"github.com/semaphoreui/semaphore/db"
-	proFactory "github.com/semaphoreui/semaphore/pro/db/factory"
+	featFactory "github.com/semaphoreui/semaphore/internal/db/factory"
 	"github.com/semaphoreui/semaphore/util"
 	"github.com/stretchr/testify/assert"
 )
@@ -66,7 +66,7 @@ func TestBackupProject(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	backup, err := GetBackup(proj.ID, store, proFactory.NewWorkflowStore(store))
+	backup, err := GetBackup(proj.ID, store, featFactory.NewWorkflowStore(store))
 	assert.NoError(t, err)
 	assert.Equal(t, proj.ID, backup.Meta.ID)
 
@@ -91,7 +91,7 @@ func TestBackupProject(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	restoredProj, err := restoredBackup.Restore(user, store, proFactory.NewWorkflowStore(store))
+	restoredProj, err := restoredBackup.Restore(user, store, featFactory.NewWorkflowStore(store))
 	assert.NoError(t, err)
 	assert.Equal(t, restoredProj.Name, "Test 1234")
 
@@ -135,7 +135,7 @@ func TestBackup_BackupSecretStorage(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	backup, err := GetBackup(proj.ID, store, proFactory.NewWorkflowStore(store))
+	backup, err := GetBackup(proj.ID, store, featFactory.NewWorkflowStore(store))
 	assert.NoError(t, err)
 	assert.Equal(t, proj.ID, backup.Meta.ID)
 	backup.Meta.Name = "Test 1234"
@@ -203,7 +203,7 @@ func TestBackup_BackupSecretStorage(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	restoredProj, err := restoredBackup.Restore(user, store, proFactory.NewWorkflowStore(store))
+	restoredProj, err := restoredBackup.Restore(user, store, featFactory.NewWorkflowStore(store))
 	assert.Nil(t, err)
 
 	restoredStorages, err := store.GetSecretStorages(restoredProj.ID)
@@ -305,7 +305,7 @@ func TestBackup_RestoreScheduleWithoutTaskParams(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	restoredProj, err := restoredBackup.Restore(user, store, proFactory.NewWorkflowStore(store))
+	restoredProj, err := restoredBackup.Restore(user, store, featFactory.NewWorkflowStore(store))
 	assert.NoError(t, err)
 
 	restoredSchedules, err := store.GetSchedules()

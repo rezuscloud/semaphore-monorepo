@@ -5,7 +5,7 @@ import (
 
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pro_interfaces"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 )
 
 // workflowController is the open-source stub. Workflows are a Pro feature; the
@@ -15,7 +15,7 @@ import (
 // flag (see pro/pkg/features).
 type workflowController struct{}
 
-func NewWorkflowController(svc pro_interfaces.WorkflowService, workflowRepo db.WorkflowManager) pro_interfaces.WorkflowController {
+func NewWorkflowController(svc interfaces.WorkflowService, workflowRepo db.WorkflowManager) interfaces.WorkflowController {
 	return &workflowController{}
 }
 
