@@ -150,7 +150,7 @@
         }/templates/${item.id}/details`">{{ $t('template_details') }}
       </v-tab>
       <v-tab
-        v-if="isPro && can(USER_PERMISSIONS.manageProjectResources)"
+        v-if="featureEnabled && can(USER_PERMISSIONS.manageProjectResources)"
         :to="`/project/${item.project_id}${
           $route.params.viewId ? `/views/${$route.params.viewId}` : ''
         }/templates/${item.id}/perms`">{{ $t('Permissions') }}
@@ -291,8 +291,8 @@ export default {
       return this.item && this.inventory && this.environment && this.repositories;
     },
 
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
   },
 

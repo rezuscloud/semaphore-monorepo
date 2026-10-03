@@ -94,7 +94,7 @@
                 :label="$t('adminUser')"
               ></v-checkbox>
             </v-col>
-            <v-col cols="6" v-if="isPro">
+            <v-col cols="6" v-if="featureEnabled">
               <v-checkbox
                 :disabled="!isAdmin"
                 dense
@@ -236,8 +236,8 @@ export default {
   },
 
   computed: {
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
 
     canChangePassword() {

@@ -6,8 +6,8 @@
 # the fork's ONLY release path (fork repos stay clean: upstream code +
 # patches + this one workflow — no sync scripts, no manifests here).
 #
-# Image: ghcr.io/rezuscloud/semaphore — OSS build (APP_BUILD_TYPE="" is the
-# Dockerfile default; no pro module, no GH_TOKEN needed).
+# Image: ghcr.io/rezuscloud/semaphore — the one build of the fully open
+# source tree; no build-type variants, no extra credentials needed.
 name: release
 
 on:

@@ -68,10 +68,7 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "serve"],
             "cwd": "${workspaceFolder}/web",
-            "console": "integratedTerminal",
-            "env": {
-                "VUE_APP_BULID_TYPE": "pro_selfhosted"
-            }
+            "console": "integratedTerminal"
         },
 
     ]

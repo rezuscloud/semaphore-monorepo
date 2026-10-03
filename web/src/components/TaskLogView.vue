@@ -44,7 +44,7 @@
       <v-tab>Log</v-tab>
       <v-tab>Details</v-tab>
       <v-tab
-        v-if="isPro"
+        v-if="featureEnabled"
         :disabled="!isTaskStopped"
       >
         Summary
@@ -314,8 +314,8 @@ export default {
       ].includes(this.item.status);
     },
 
-    isPro() {
-      return (process.env.VUE_APP_BUILD_TYPE || '').startsWith('pro_');
+    featureEnabled() {
+      return false;
     },
   },
 
