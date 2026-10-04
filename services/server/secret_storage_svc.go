@@ -118,6 +118,12 @@ func (s *SecretStorageServiceImpl) Create(storage db.SecretStorage) (res db.Secr
 		}
 	}
 
+	// Test connection for the implemented backends: the storage endpoint
+	// must be healthy and the credential must be accepted.
+	if err = validateStorageConnection(storage, sourceStorageType); err != nil {
+		return
+	}
+
 	res, err = s.secretStorageRepo.CreateSecretStorage(storage)
 
 	if err != nil {
@@ -144,7 +150,32 @@ func (s *SecretStorageServiceImpl) Create(storage db.SecretStorage) (res db.Secr
 	return
 }
 
+// validateStorageConnection runs the "test connection" for storage types
+// whose client is implemented. Other types pass through untouched (their
+// milestones add their own validation).
+func validateStorageConnection(storage db.SecretStorage, sourceType *db.AccessKeySourceStorageType) error {
+	switch storage.Type {
+	case db.SecretStorageTypeVault, db.SecretStorageTypeOpenBao:
+	default:
+		return nil
+	}
+
+	if err := server.ValidateSecretStorageConnection(storage, sourceType, storage.Secret); err != nil {
+		return common_errors.NewUserErrorS("secret storage connection failed: " + err.Error())
+	}
+	return nil
+}
+
 func (s *SecretStorageServiceImpl) Update(storage db.SecretStorage) (err error) {
+	// Validate a newly supplied credential / endpoint before anything is
+	// persisted. Without a secret the existing credential is kept — no
+	// revalidation (the scheduler's health check covers it at sync time).
+	if storage.Secret != "" {
+		if err = validateStorageConnection(storage, storage.SourceStorageType); err != nil {
+			return
+		}
+	}
+
 	err = s.secretStorageRepo.UpdateSecretStorage(storage)
 	if err != nil {
 		return
