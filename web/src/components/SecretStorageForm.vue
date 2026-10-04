@@ -47,13 +47,30 @@
         dense
       ></v-text-field>
 
-      <SecretSourceToggle v-model="secretStorage" label="Token" :disabled="formSaving" />
+      <v-text-field
+        v-model="item.params.role_id"
+        :label="$t('Role ID')"
+        :hint="item.params.role_id != null && item.params.role_id !== ''
+          ? 'Optional AppRole auth: the credential below is the AppRole secret ID.'
+          : 'Optional AppRole auth; leave empty for token auth.'"
+        persistent-hint
+        :disabled="formSaving"
+        data-testid="secretStorage-vaultRoleID"
+        outlined
+        dense
+      ></v-text-field>
+
+      <SecretSourceToggle
+        v-model="secretStorage"
+        :label="item.params.role_id ? 'AppRole Secret ID' : 'Token'"
+        :disabled="formSaving"
+      />
 
       <v-text-field
         v-if="secretStorage === 'database'"
         class="masked-secret-input"
         v-model="item.secret"
-        :label="$t('Token')"
+        :label="item.params.role_id ? $t('Secret ID') : $t('Token')"
         :disabled="formSaving"
         :rules="[(v) => !!v || itemId !== 'new' || $t('token_required')]"
         required
