@@ -13,6 +13,11 @@ COPY . /go/src/semaphore
 RUN --mount=type=cache,target=/go/pkg \
     go mod download -x
 
+# Build-platform args (set by buildx from --platform). Required for the
+# cross-arch tool downloads below and for reproducible GOOS/GOARCH.
+ARG TARGETOS
+ARG TARGETARCH
+
 RUN --mount=type=cache,target=/go/pkg \
     --mount=type=cache,target=/root/.cache/go-build \
     task deps && \
