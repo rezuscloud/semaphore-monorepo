@@ -624,6 +624,38 @@ jobs:
   # dev server: client protocol, serializer roundtrip, sync (storage-level
   # + env-scoped), runtime resolution. See milestone "OpenBao / HashiCorp
   # Vault secrets storage (KV v2)".
+  integrate-authentik:
+    runs-on: [self-hosted, Linux, X64]
+
+    needs:
+      - build
+
+    # Live SSO proof against the platform's real Authentik (milestone
+    # "SSO via OIDC"): the test idempotently ensures its user/provider/
+    # application on auth.rezus.cloud via the API, boots the real Semaphore
+    # API on 127.0.0.1:4000 and drives the full authorization-code flow
+    # headlessly (flow-executor login -> authorize -> callback -> session).
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Setup golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.4'
+
+      - name: Run Authentik integration tests
+        env:
+          AUTHENTIK_ADDR: https://auth.rezus.cloud
+          AUTHENTIK_TEST_USER: semaphore-itest
+          AUTHENTIK_TEST_EMAIL: semaphore-itest@rezus.cloud
+          AUTHENTIK_API_TOKEN: ${{ secrets.AUTHENTIK_API_TOKEN }}
+          AUTHENTIK_CLIENT_ID: ${{ secrets.AUTHENTIK_CLIENT_ID }}
+          AUTHENTIK_CLIENT_SECRET: ${{ secrets.AUTHENTIK_CLIENT_SECRET }}
+          AUTHENTIK_TEST_PASSWORD: ${{ secrets.AUTHENTIK_TEST_PASSWORD }}
+        run: |
+          go test -tags integration_authentik ./api/ -run TestAuthentikEndToEnd -v -count=1 -timeout 5m
+
   integrate-openbao:
     runs-on: [self-hosted, Linux, X64]
 
