@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/pkg/common_errors"
 	"github.com/semaphoreui/semaphore/internal/services/server"
+	"github.com/semaphoreui/semaphore/pkg/common_errors"
 )
 
 const RekeyBatchSize = 100

@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 
 	"github.com/semaphoreui/semaphore/db_lib"
+	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/pkg/jwt"
 	"github.com/semaphoreui/semaphore/pkg/tz"
-	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/services/tasks/hooks"
 
 	"github.com/semaphoreui/semaphore/api/sockets"

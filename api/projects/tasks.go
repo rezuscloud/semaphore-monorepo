@@ -54,7 +54,6 @@ func (c *TaskController) AddTask(w http.ResponseWriter, r *http.Request) {
 		tpl.App.NeedTaskAlias(),
 	)
 
-
 	if err != nil {
 		log.WithFields(log.Fields{
 			"context":     "AddTask",

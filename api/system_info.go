@@ -5,8 +5,8 @@ import (
 
 	"github.com/semaphoreui/semaphore/api/helpers"
 	"github.com/semaphoreui/semaphore/db"
-	"github.com/semaphoreui/semaphore/internal/pkg/features"
 	"github.com/semaphoreui/semaphore/internal/interfaces"
+	"github.com/semaphoreui/semaphore/internal/pkg/features"
 	"github.com/semaphoreui/semaphore/util"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,19 +15,19 @@ type SystemInfoController struct {
 }
 
 type SystemInfo struct {
-	Version           string                  `json:"version"`
-	Ansible           string                  `json:"ansible"`
-	WebHost           string                  `json:"web_host"`
-	UseRemoteRunner   bool                    `json:"use_remote_runner"`
-	AuthMethods       LoginAuthMethods        `json:"auth_methods"`
-	LoginWithPassword bool                    `json:"login_with_password"`
+	Version           string              `json:"version"`
+	Ansible           string              `json:"ansible"`
+	WebHost           string              `json:"web_host"`
+	UseRemoteRunner   bool                `json:"use_remote_runner"`
+	AuthMethods       LoginAuthMethods    `json:"auth_methods"`
+	LoginWithPassword bool                `json:"login_with_password"`
 	Features          interfaces.Features `json:"features"`
-	GitClient         string                  `json:"git_client"`
-	ScheduleTimezone  string                  `json:"schedule_timezone"`
-	Teams             *util.TeamsConfig       `json:"teams"`
-	Roles             []db.Role               `json:"roles"`
-	BoltdbUsed        bool                    `json:"boltdb_used"`
-	JWT               SystemInfoJWT           `json:"jwt"`
+	GitClient         string              `json:"git_client"`
+	ScheduleTimezone  string              `json:"schedule_timezone"`
+	Teams             *util.TeamsConfig   `json:"teams"`
+	Roles             []db.Role           `json:"roles"`
+	BoltdbUsed        bool                `json:"boltdb_used"`
+	JWT               SystemInfoJWT       `json:"jwt"`
 }
 
 // SystemInfoJWT exposes the global JWT configuration for the WebUI.
