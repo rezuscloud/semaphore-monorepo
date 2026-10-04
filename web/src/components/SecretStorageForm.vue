@@ -50,7 +50,7 @@
       <v-text-field
         v-model="item.params.role_id"
         :label="$t('Role ID')"
-        :hint="item.params.role_id != null && item.params.role_id !== ''
+        :hint="isAppRoleAuth
           ? 'Optional AppRole auth: the credential below is the AppRole secret ID.'
           : 'Optional AppRole auth; leave empty for token auth.'"
         persistent-hint
@@ -62,7 +62,7 @@
 
       <SecretSourceToggle
         v-model="secretStorage"
-        :label="item.params.role_id ? 'AppRole Secret ID' : 'Token'"
+        :label="credentialToggleLabel"
         :disabled="formSaving"
       />
 
@@ -70,7 +70,7 @@
         v-if="secretStorage === 'database'"
         class="masked-secret-input"
         v-model="item.secret"
-        :label="item.params.role_id ? $t('Secret ID') : $t('Token')"
+        :label="credentialFieldLabel"
         :disabled="formSaving"
         :rules="[(v) => !!v || itemId !== 'new' || $t('token_required')]"
         required
@@ -440,6 +440,18 @@ export default {
   },
 
   computed: {
+    isAppRoleAuth() {
+      return !!(this.item?.params?.role_id);
+    },
+
+    credentialToggleLabel() {
+      return this.isAppRoleAuth ? 'AppRole Secret ID' : 'Token';
+    },
+
+    credentialFieldLabel() {
+      return this.isAppRoleAuth ? this.$t('Secret ID') : this.$t('Token');
+    },
+
     useIamRole() {
       return this.item?.params?.use_iam_role;
     },
