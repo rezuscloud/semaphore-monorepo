@@ -1,13 +1,26 @@
-# Tag-triggered fork release — builds the Rezus.cloud semaphore server image.
+# Tag-triggered fork release — replicates upstream's community release
+# (semaphoreui/semaphore .github/workflows/community_release.yml) for this
+# distribution:
 #
-# The fork mints no version of its own (identity = upstream version):
-# tags are machine-cut by the harmostes fork-maintenance engine as
-# v<upstream-ver>-rezus.<N+1> after every validated sync. This workflow is
-# the fork's ONLY release path (fork repos stay clean: upstream code +
-# patches + this one workflow — no sync scripts, no manifests here).
+#   binaries: GoReleaser — server binaries for the full upstream platform
+#             matrix, deb/rpm packages, checksums, GitHub Release
+#   images:   server + runner container images
 #
-# Image: ghcr.io/rezuscloud/semaphore — the one build of the fully open
-# source tree; no build-type variants, no extra credentials needed.
+# Deviations from upstream, each deliberate:
+#   - ghcr.io/rezuscloud/* instead of Docker Hub (org registry)
+#   - linux/amd64 images only (fork def in k8s-config; QEMU-emulated arm64
+#     go builds are not worth the CI minutes for this platform)
+#   - no -ansible/-powershell variant images (single deployment target;
+#     pin tool versions in your own downstream image if needed)
+#   - no GPG signing of checksums/packages (no rezus release key yet —
+#     .goreleaser.yml keeps a marker where the signs block returns)
+#   - the GitHub Release publishes atomically (upstream drafts for manual
+#     sign-off; our tags are machine-cut after validated syncs)
+#
+# The fork mints no version of its own (identity = upstream version): tags
+# are cut as v<upstream-ver>-rezus.<N+1>. This workflow is the fork's ONLY
+# release path (fork repos stay clean: upstream code + patches + this one
+# workflow — no sync scripts, no manifests here).
 name: release
 
 on:
@@ -17,7 +30,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 concurrency:
@@ -25,16 +38,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  image:
+  binaries:
+    name: Binaries + packages (GoReleaser)
     runs-on: [self-hosted, Linux, X64]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Setup golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.4'
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install go-task
+        run: |
+          go install github.com/go-task/task/v3/cmd/task@latest
+
+      - name: Install goreleaser
+        run: |
+          go install github.com/goreleaser/goreleaser/v2@latest
+
+      - name: Install deps
+        run: |
+          task deps
+
+      - name: Run goreleaser
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PROJECT_NAME: semaphore
+        run: |
+          goreleaser release --clean
+
+  images:
+    name: Container images (server + runner)
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -63,3 +112,15 @@ jobs:
           tags: |
             ghcr.io/rezuscloud/semaphore:${{ steps.meta.outputs.version }}
             ghcr.io/rezuscloud/semaphore:latest
+
+      - name: Build and push runner image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deployment/docker/runner/Dockerfile
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: |
+            ghcr.io/rezuscloud/semaphore-runner:${{ steps.meta.outputs.version }}
+            ghcr.io/rezuscloud/semaphore-runner:latest

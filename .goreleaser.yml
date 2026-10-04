@@ -50,28 +50,12 @@ archives:
       - goos: windows
         format: zip
 
-signs:
-  -
-    artifacts: checksum
-    signature: "{{ .Env.PROJECT_NAME }}_{{ .Version }}_checksums.txt.sig"
-    cmd: gpg
-    stdin: '{{ .Env.GPG_PASS_3 }}'
-    args:
-      - "--batch"
-      - "--pinentry-mode"
-      - "loopback"
-      - "--passphrase-fd"
-      - "0"
-      - "-u"
-      - "{{ .Env.GPG_KEY_ID_3 }}"
-      - "--yes"
-      - "--output"
-      - "${signature}"
-      - "--detach-sign"
-      - "${artifact}"
-
 checksum:
   name_template: "{{ .Env.PROJECT_NAME }}_{{ .Version }}_checksums.txt"
+
+# Upstream GPG-signs the checksums file with the Semaphore UI release key.
+# This distribution has no signing key yet — checksums ship unsigned; a
+# rezus release key can restore this block verbatim.
 
 snapshot:
   name_template: "{{ .Timestamp }}-{{ .ShortCommit }}-SNAPSHOT"
@@ -105,7 +89,9 @@ nfpms:
       signature:
         key_file: '{{ envOrDefault "GPG_KEY_PATH" "" }}'
 
+# Upstream publishes the release as a draft for manual sign-off. Tags here
+# are machine-cut by the fork-maintenance engine after validated syncs, so
+# the release publishes atomically.
 release:
-  draft: true
-  use_existing_draft: true
+  draft: false
   name_template: "{{.Tag}}"
