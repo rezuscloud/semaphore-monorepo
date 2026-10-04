@@ -11,8 +11,8 @@ import (
 	"github.com/semaphoreui/semaphore/db"
 	"github.com/semaphoreui/semaphore/db/factory"
 	"github.com/semaphoreui/semaphore/db/sql"
-	"github.com/semaphoreui/semaphore/pkg/random"
 	featFactory "github.com/semaphoreui/semaphore/internal/db/factory"
+	"github.com/semaphoreui/semaphore/pkg/random"
 	"github.com/semaphoreui/semaphore/util"
 	"github.com/snikch/goodman/transaction"
 )

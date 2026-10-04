@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/semaphoreui/semaphore/internal/interfaces"
+	"github.com/semaphoreui/semaphore/internal/pkg/stage_parsers"
 	"github.com/semaphoreui/semaphore/pkg/jwt"
 	"github.com/semaphoreui/semaphore/pkg/random"
 	"github.com/semaphoreui/semaphore/pkg/tz"
-	"github.com/semaphoreui/semaphore/internal/pkg/stage_parsers"
-	"github.com/semaphoreui/semaphore/internal/interfaces"
 	"github.com/semaphoreui/semaphore/services/server"
 
 	"github.com/semaphoreui/semaphore/db"

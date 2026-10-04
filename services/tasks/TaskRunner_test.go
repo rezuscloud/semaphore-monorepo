@@ -10,8 +10,8 @@ import (
 	"github.com/semaphoreui/semaphore/db/sql"
 	"github.com/semaphoreui/semaphore/pkg/ssh"
 
-	"github.com/semaphoreui/semaphore/pkg/task_logger"
 	"github.com/semaphoreui/semaphore/internal/interfaces"
+	"github.com/semaphoreui/semaphore/pkg/task_logger"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/semaphoreui/semaphore/db_lib"

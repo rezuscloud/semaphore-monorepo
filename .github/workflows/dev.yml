@@ -38,6 +38,17 @@ jobs:
         with:
           go-version: '1.26.4'
 
+      - name: Lint (gofmt + go vet)
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "$unformatted"
+            echo "::error::files not gofmt-formatted"
+            exit 1
+          fi
+          go vet ./...
+          go vet -C .dredd/hooks .
+
       - name: Setup nodejs
         uses: actions/setup-node@v4
         with:
@@ -81,6 +92,30 @@ jobs:
           name: dredd-hooks
           path: .dredd/compiled_hooks
           retention-days: 1
+
+  image:
+    runs-on: [self-hosted, Linux, X64]
+
+    needs:
+      - build
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Proves the release Dockerfile path on every PR. The push itself stays
+      # in release.yml (tag-triggered).
+      - name: Build server image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deployment/docker/server/Dockerfile
+          platforms: linux/amd64
+          push: false
+          provenance: false
 
   migrate-mysql:
     runs-on: [self-hosted, Linux, X64]

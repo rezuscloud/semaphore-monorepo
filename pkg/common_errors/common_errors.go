@@ -21,7 +21,6 @@ func NewUserErrorS(err string) error {
 	return &UserVisibleError{Err: errors.New(err)}
 }
 
-
 func GetErrorContext() string {
 	pc, file, line, _ := runtime.Caller(1)
 	fn := runtime.FuncForPC(pc)

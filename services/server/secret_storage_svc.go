@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	"github.com/semaphoreui/semaphore/db"
+	"github.com/semaphoreui/semaphore/internal/services/server"
 	"github.com/semaphoreui/semaphore/pkg/common_errors"
 	"github.com/semaphoreui/semaphore/pkg/random"
-	"github.com/semaphoreui/semaphore/internal/services/server"
 )
 
 type SecretStorageService interface {
