@@ -644,6 +644,22 @@ jobs:
         with:
           go-version: '1.26.4'
 
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install go-task
+        run: |
+          go install github.com/go-task/task/v3/cmd/task@latest
+
+      - name: Build frontend
+        run: |
+          task deps
+          task build:fe
+
       - name: Run Authentik integration tests
         env:
           AUTHENTIK_ADDR: https://auth.rezus.cloud
