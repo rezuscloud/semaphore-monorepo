@@ -135,6 +135,7 @@ func GetMigrations(dialect string) []Migration {
 		{Version: "2.19.14"},
 		// Rezus.cloud distribution: drop the legacy per-user edition flag.
 		{Version: "2.19.100"},
+		{Version: "2.19.101"},
 	}
 
 	return append(initScripts, commonScripts...)

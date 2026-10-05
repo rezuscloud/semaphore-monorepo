@@ -259,6 +259,10 @@ type ProjectStore interface {
 	GetProjectUsers(projectID int, params RetrieveQueryParams) ([]UserWithProjectRole, error)
 	CreateProjectUser(projectUser ProjectUser) (ProjectUser, error)
 	DeleteProjectUser(projectID int, userID int) error
+	// fork: IdP-managed memberships (OIDC role mapping provenance)
+	GetExternalProjectUsers(userID int) ([]ProjectUser, error)
+	UpsertExternalProjectUser(projectUser ProjectUser) error
+	DeleteExternalProjectUser(projectID, userID int) error
 	GetProjectUser(projectID int, userID int) (ProjectUser, error)
 	UpdateProjectUser(projectUser ProjectUser) error
 }

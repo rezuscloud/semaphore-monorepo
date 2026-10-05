@@ -36,6 +36,11 @@ type ProjectUser struct {
 	ProjectID int             `db:"project_id" json:"project_id"`
 	UserID    int             `db:"user_id" json:"user_id"`
 	Role      ProjectUserRole `db:"role" json:"role"`
+
+	// External marks memberships created by IdP group mapping at login;
+	// only those rows are reconciled/revoked by later logins (fork
+	// feature — see api/login_oidc_roles.go).
+	External bool `db:"external" json:"external"`
 }
 
 func (r ProjectUserRole) Can(permissions ProjectUserPermission) bool {

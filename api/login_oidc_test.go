@@ -36,6 +36,9 @@ type fakeOIDCIdP struct {
 	issuer   string
 	clientID string
 	code     string
+
+	// groups emitted as the "groups" claim (nil = omit the claim).
+	groups []string
 }
 
 func newFakeOIDCIdP(t *testing.T, clientID, email string) *fakeOIDCIdP {
@@ -100,6 +103,10 @@ func newFakeOIDCIdP(t *testing.T, clientID, email string) *fakeOIDCIdP {
 			"preferred_username": "idpuser",
 			"iat":                now.Unix(),
 			"exp":                now.Add(time.Hour).Unix(),
+		}
+
+		if idp.groups != nil {
+			claims["groups"] = idp.groups
 		}
 
 		raw, err := signer.Sign([]byte(mustJSON(t, claims)))
@@ -375,4 +382,42 @@ func TestOidcLocalUserConflictRejected(t *testing.T) {
 	require.Equal(t, http.StatusTemporaryRedirect, resp.StatusCode)
 	assert.Contains(t, resp.Header.Get("Location"), "/auth/login",
 		"conflict with a local user must land on the login page")
+}
+
+// TestOidcRoleMappingFlowGrantsAtLogin: the groups claim on the verified ID
+// token must flow through claimResult into the role-mapping reconcile —
+// admin flag and an IdP-managed project membership granted at login.
+func TestOidcRoleMappingFlowGrantsAtLogin(t *testing.T) {
+	idp := newFakeOIDCIdP(t, "semaphore-test", "user@rezus.cloud")
+	idp.groups = []string{"semaphore-admins", "viewers"}
+	env := newOIDCTestEnv(t, idp)
+
+	project, err := env.store.CreateProject(db.Project{Name: "infra"})
+	require.NoError(t, err)
+
+	// the provider gains the fork's mapping config (read per request)
+	prov := util.Config.OidcProviders["authentik"]
+	prov.GroupsClaim = "groups"
+	prov.RoleMapping = &util.RoleMappingConfig{
+		Admin: []string{"semaphore-admins"},
+		ProjectRoles: []util.RoleMappingRule{
+			{Project: "infra", Role: string(db.ProjectGuest), Groups: []string{"viewers"}},
+		},
+	}
+	util.Config.OidcProviders["authentik"] = prov
+
+	client := env.client(t)
+	resp := get(t, client, env.baseURL+"/api/auth/oidc/authentik/login")
+	resp = get(t, client, resp.Header.Get("Location"))
+	resp = get(t, client, resp.Header.Get("Location"))
+	require.Equal(t, http.StatusTemporaryRedirect, resp.StatusCode)
+
+	user, err := env.store.GetUserByLoginOrEmail("", "user@rezus.cloud")
+	require.NoError(t, err)
+	assert.True(t, user.Admin, "groups claim must grant admin at login")
+
+	pu, err := env.store.GetProjectUser(project.ID, user.ID)
+	require.NoError(t, err)
+	assert.Equal(t, db.ProjectGuest, pu.Role)
+	assert.True(t, pu.External, "login-granted membership must be IdP-managed")
 }
