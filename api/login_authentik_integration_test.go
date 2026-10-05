@@ -58,13 +58,17 @@ func TestAuthentikEndToEnd(t *testing.T) {
 
 	// --- 1. Authentik setup (idempotent) ------------------------------
 	ak := &authentikClient{t: t, addr: addr, token: apiToken}
-	ak.ensureUser(testUser, "Semaphore CI Test", testEmail, testPassword)
+	userPK := ak.ensureUser(testUser, "Semaphore CI Test", testEmail, testPassword)
+	adminGroupPK := ak.ensureGroup("semaphore-admins")
 	ak.ensureProvider("semaphore-oidc-test", clientID, clientSecret, redirectURI, testEmail)
 	ak.ensureApplication("Semaphore Test", "semaphore-itest", "semaphore-oidc-test")
 
 	// --- 2. Semaphore API (real router + sqlite store) ----------------
 	store := sql.CreateTestStore()
 	t.Cleanup(func() { _ = store.Close })
+
+	infra, err := store.CreateProject(db.Project{Name: "itest-infra"})
+	require.NoError(t, err)
 
 	hash, err := base64.StdEncoding.DecodeString(base64.StdEncoding.EncodeToString([]byte("itest-hash-key-0123456789abcdef012345")))
 	require.NoError(t, err)
@@ -83,11 +87,18 @@ func TestAuthentikEndToEnd(t *testing.T) {
 				ClientSecret:  clientSecret,
 				RedirectURL:   redirectURI,
 				AutoDiscovery: addr + "/application/o/semaphore-itest/",
-				Scopes:        []string{"openid", "profile", "email"},
+				Scopes:        []string{"openid", "profile", "email", "groups"},
 				DisplayName:   "Authentik (rezus.cloud)",
 				UsernameClaim: "preferred_username",
 				NameClaim:     "name",
 				EmailClaim:    "email",
+				GroupsClaim:   "groups",
+				RoleMapping: &util.RoleMappingConfig{
+					Admin: []string{"semaphore-admins"},
+					ProjectRoles: []util.RoleMappingRule{
+						{Project: "itest-infra", Role: string(db.ProjectGuest), Groups: []string{"semaphore-admins"}},
+					},
+				},
 			},
 		},
 	}
@@ -137,6 +148,28 @@ func TestAuthentikEndToEnd(t *testing.T) {
 	// tampered state must be rejected without a session
 	rejected := rejectedStateClient(t, baseURL)
 	assert.Contains(t, rejected, "/auth/login", "state mismatch must land on the login page")
+
+	// --- 4. role mapping: group grants admin + project membership ------
+	ak.setUserGroups(userPK, []string{adminGroupPK})
+
+	granted := loginViaAuthentik(t, addr, baseURL, testUser, testPassword)
+	me = granted.me(t, baseURL)
+	assert.True(t, me.Admin, "groups claim must grant the admin flag at login")
+
+	pu, err := store.GetProjectUser(infra.ID, me.ID)
+	require.NoError(t, err, "groups claim must grant the mapped project role")
+	assert.Equal(t, db.ProjectGuest, pu.Role)
+	assert.True(t, pu.External, "login-granted membership must be IdP-managed")
+
+	// --- 5. role mapping: group loss revokes at next login -------------
+	ak.setUserGroups(userPK, nil)
+
+	revoked := loginViaAuthentik(t, addr, baseURL, testUser, testPassword)
+	meAfter := revoked.me(t, baseURL)
+	assert.False(t, meAfter.Admin, "losing the group must demote at next login")
+
+	_, err = store.GetProjectUser(infra.ID, meAfter.ID)
+	assert.ErrorIs(t, err, db.ErrNotFound, "losing the group must revoke the IdP-managed membership")
 }
 
 func envOr(key, fallback string) string {
@@ -385,7 +418,7 @@ type paginated[T any] struct {
 	Results []T `json:"results"`
 }
 
-func (a *authentikClient) ensureUser(username, name, email, password string) {
+func (a *authentikClient) ensureUser(username, name, email, password string) int {
 	a.t.Helper()
 
 	code, raw := a.do(http.MethodGet, "/core/users/?username="+username, nil)
@@ -414,6 +447,75 @@ func (a *authentikClient) ensureUser(username, name, email, password string) {
 	// password is (re)set every run — tests must not depend on leftovers
 	code, raw = a.do(http.MethodPost, fmt.Sprintf("/core/users/%d/set_password/", pk), map[string]string{"password": password})
 	require.Equal(a.t, http.StatusNoContent, code, "set_password: %s", string(raw))
+	return pk
+}
+
+// setUserGroups replaces the user's group memberships (list of group PKs).
+func (a *authentikClient) setUserGroups(userPK int, groupPKs []string) {
+	a.t.Helper()
+	if groupPKs == nil {
+		groupPKs = []string{} // null is rejected; empty list clears
+	}
+	code, raw := a.do(http.MethodPatch, fmt.Sprintf("/core/users/%d/", userPK), map[string]any{"groups": groupPKs})
+	require.Equal(a.t, http.StatusOK, code, "user groups patch: %s", string(raw))
+}
+
+// ensureGroup returns the group's PK, creating it if absent.
+func (a *authentikClient) ensureGroup(name string) string {
+	a.t.Helper()
+
+	code, raw := a.do(http.MethodGet, "/core/groups/?name="+name, nil)
+	require.Equal(a.t, http.StatusOK, code, "group lookup: %s", string(raw))
+	var groups paginated[struct {
+		PK       string `json:"pk"`
+		NumUsers int    `json:"num_users"`
+		Name     string `json:"name"`
+	}]
+	require.NoError(a.t, json.Unmarshal(raw, &groups))
+
+	if len(groups.Results) == 0 {
+		code, raw = a.do(http.MethodPost, "/core/groups/", map[string]any{"name": name, "users": []any{}})
+		require.Equal(a.t, http.StatusCreated, code, "group create: %s", string(raw))
+		var created struct {
+			PK string `json:"pk"`
+		}
+		require.NoError(a.t, json.Unmarshal(raw, &created))
+		return created.PK
+	}
+	return groups.Results[0].PK
+}
+
+// ensureGroupMapping returns the PK of a custom scope mapping that emits
+// the user's group names as the "groups" claim (authentik ships no
+// managed groups-claim mapping; it must be created with an expression).
+func (a *authentikClient) ensureGroupMapping() string {
+	a.t.Helper()
+
+	expression := "return {\"groups\": [group.name for group in user.ak_groups.all()]}"
+	body := map[string]any{
+		"name":       "semaphore-itest-groups",
+		"scope_name": "groups",
+		"expression": expression,
+	}
+
+	code, raw := a.do(http.MethodGet, "/propertymappings/provider/scope/?scope_name=groups", nil)
+	require.Equal(a.t, http.StatusOK, code, "mapping lookup: %s", string(raw))
+	var mappings paginated[struct {
+		PK        string `json:"pk"`
+		ScopeName string `json:"scope_name"`
+	}]
+	require.NoError(a.t, json.Unmarshal(raw, &mappings))
+
+	if len(mappings.Results) == 0 {
+		code, raw = a.do(http.MethodPost, "/propertymappings/provider/scope/", body)
+		require.Equal(a.t, http.StatusCreated, code, "mapping create: %s", string(raw))
+		var created struct {
+			PK string `json:"pk"`
+		}
+		require.NoError(a.t, json.Unmarshal(raw, &created))
+		return created.PK
+	}
+	return mappings.Results[0].PK
 }
 
 func (a *authentikClient) flowPK(slug string) string {
@@ -471,9 +573,9 @@ func (a *authentikClient) ensureProvider(name, clientID, clientSecret, redirectU
 		"client_type":          "confidential",
 		"client_id":            clientID,
 		"client_secret":        clientSecret,
-		"grant_types":          []string{"authorization_code", "refresh_token"}, // empty default = silent rejection
-		"property_mappings":    a.scopeMappings(),                               // empty default = claim-less tokens
-		"signing_key":          a.signingKeyPK(),                                // null = HS256, rejected by go-oidc
+		"grant_types":          []string{"authorization_code", "refresh_token"},   // empty default = silent rejection
+		"property_mappings":    append(a.scopeMappings(), a.ensureGroupMapping()), // empty default = claim-less tokens
+		"signing_key":          a.signingKeyPK(),                                  // null = HS256, rejected by go-oidc
 		"redirect_uris":        []map[string]any{{"matching_mode": "strict", "url": redirectURI, "redirect_uri_type": "authorization"}},
 		"sub_mode":             "user_email",
 		"access_code_validity": "minutes=5",

@@ -17,6 +17,12 @@ type OidcProvider struct {
 	EmailClaim       string       `json:"email_claim" default:"email"`
 	Order            int          `json:"order"`
 
+	// GroupsClaim + RoleMapping map identity-provider group claims to
+	// Semaphore privileges at login (fork feature; inert when unset —
+	// see util/RoleMapping.go and the repo wiki "SSO-OIDC" page).
+	GroupsClaim string             `json:"groups_claim"`
+	RoleMapping *RoleMappingConfig `json:"role_mapping"`
+
 	// ReturnViaState when true, passes the return path via the OAuth state parameter instead of the redirect URL path. This is useful for OAuth providers that have strict redirect URL validation.
 	ReturnViaState bool `json:"return_via_state" default:"true"`
 }

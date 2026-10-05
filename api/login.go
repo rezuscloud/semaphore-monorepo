@@ -572,6 +572,11 @@ type claimResult struct {
 	username string
 	name     string
 	email    string
+	groups   []string // fork: groups claim for role mapping (see login_oidc_roles.go)
+	// groupsKnown reports whether `groups` was read from a verified ID
+	// token — the userinfo path cannot see group claims, and mapping must
+	// skip (never demote) when they are unknown.
+	groupsKnown bool
 }
 
 func parseClaim(str string, claims map[string]any) (string, bool) {
@@ -646,6 +651,12 @@ func parseClaims(claims map[string]any, provider util.ClaimsProvider) (res claim
 		res.name = getRandomProfileName()
 	}
 
+	// fork: extract the groups claim for role mapping when configured;
+	// providers without the feature (upstream shape) are unaffected.
+	if gp, ok := provider.(util.GroupsClaimProvider); ok {
+		res.groups = extractGroups(claims, gp.GetGroupsClaim())
+	}
+
 	return
 }
 
@@ -668,7 +679,9 @@ func claimOidcToken(idToken *oidc.IDToken, provider util.OidcProvider) (res clai
 
 	prepareClaims(claims)
 
-	return parseClaims(claims, &provider)
+	res, err = parseClaims(claims, &provider)
+	res.groupsKnown = err == nil
+	return
 }
 
 func getRandomUsername() string {
@@ -807,6 +820,17 @@ func oidcRedirect(w http.ResponseWriter, r *http.Request) {
 		log.Error(fmt.Errorf("OIDC user '%s' conflicts with local user", user.Username))
 		http.Redirect(w, r, loginURL, http.StatusTemporaryRedirect)
 		return
+	}
+
+	// fork: reconcile group-claim-mapped privileges before the session is
+	// sealed (see login_oidc_roles.go; inert unless the provider maps roles)
+	prov := &provider
+	if gp, ok := any(prov).(util.GroupsClaimProvider); ok && claims.groupsKnown {
+		if err := applyRoleMapping(helpers.Store(r), user, claims.groups, gp); err != nil {
+			log.Error("OIDC role mapping failed: " + err.Error())
+			http.Redirect(w, r, loginURL, http.StatusTemporaryRedirect)
+			return
+		}
 	}
 
 	createSession(w, r, user, true)

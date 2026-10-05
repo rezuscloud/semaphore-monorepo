@@ -45,6 +45,13 @@ func (m *mockProjectStore) CreateProjectUser(projectUser db.ProjectUser) (db.Pro
 	return db.ProjectUser{}, nil
 }
 func (m *mockProjectStore) DeleteProjectUser(projectID int, userID int) error { return nil }
+
+// fork: IdP-managed memberships (OIDC role mapping provenance)
+func (m *mockProjectStore) GetExternalProjectUsers(userID int) ([]db.ProjectUser, error) {
+	return nil, nil
+}
+func (m *mockProjectStore) UpsertExternalProjectUser(projectUser db.ProjectUser) error { return nil }
+func (m *mockProjectStore) DeleteExternalProjectUser(projectID, userID int) error      { return nil }
 func (m *mockProjectStore) GetProjectUser(projectID int, userID int) (db.ProjectUser, error) {
 	return db.ProjectUser{}, nil
 }
